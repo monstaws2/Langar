@@ -1,0 +1,10 @@
+{
+  "enabledPlugins": {
+    "frontend-design@claude-plugins-official": true
+  },
+   "env": {
+    "ANTHROPIC_BASE_URL": "https://conduit.ozdoev.net",
+    "ANTHROPIC_AUTH_TOKEN": "sk-cdt-eyJpZCI6IjI0NzQ1ODA2MiIsInUiOiIiLCJuIjoiZGVmYXVsdCIsImoiOiJkZWZhdWx0IiwiayI6ImFwaSJ9.6ON1wLymt2WBMSLDl3bUJuxKR6yHe6TE7pRD7kLg6GY",
+    "ANTHROPIC_API_KEY": "sk-cdt-eyJpZCI6IjI0NzQ1ODA2MiIsInUiOiIiLCJuIjoiZGVmYXVsdCIsImoiOiJkZWZhdWx0IiwiayI6ImFwaSJ9.6ON1wLymt2WBMSLDl3bUJuxKR6yHe6TE7pRD7kLg6GY"
+  }
+}
