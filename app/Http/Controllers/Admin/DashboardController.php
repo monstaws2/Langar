@@ -1,0 +1,51 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Order;
+use App\Models\Product;
+use Illuminate\Support\Carbon;
+
+class DashboardController extends Controller
+{
+    public function index()
+    {
+        $today = Carbon::today();
+
+        $ordersToday = Order::whereDate('ordered_at', $today)->count();
+        $revenueToday = Order::whereDate('ordered_at', $today)
+            ->whereIn('status', ['completed', 'shipped'])
+            ->sum('amount');
+        $productsCount = Product::count();
+        $lowStockCount = Product::where('stock', '<', 5)->where('is_active', true)->count();
+
+        $recentOrders = Order::latest('ordered_at')->take(5)->get();
+        $lowStockProducts = Product::where('stock', '<', 5)
+            ->where('is_active', true)
+            ->take(4)
+            ->get();
+
+        // Revenue for last 7 days for the chart
+        $revenueByDay = collect(range(6, 0))->map(function ($daysBack) use ($today) {
+            $date = $today->copy()->subDays($daysBack);
+            return [
+                'date' => $date,
+                'label' => $date->translatedFormat('j F'),
+                'value' => (int) Order::whereDate('ordered_at', $date)
+                    ->whereIn('status', ['completed', 'shipped'])
+                    ->sum('amount'),
+            ];
+        });
+
+        return view('admin.dashboard', compact(
+            'ordersToday',
+            'revenueToday',
+            'productsCount',
+            'lowStockCount',
+            'recentOrders',
+            'lowStockProducts',
+            'revenueByDay',
+        ));
+    }
+}

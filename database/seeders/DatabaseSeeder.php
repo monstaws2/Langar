@@ -4,10 +4,12 @@ namespace Database\Seeders;
 
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
@@ -95,6 +97,76 @@ class DatabaseSeeder extends Seeder
 
         foreach ($products as $product) {
             Product::create($product);
+        }
+
+        // Low-stock products for dashboard warnings
+        $lowStock = [
+            [
+                'name' => 'زنجیر دینام هوندا CDI',
+                'slug' => 'honda-cdi-chain',
+                'description' => 'زنجیر دینام اصل',
+                'price' => 95000,
+                'stock' => 2,
+                'category_id' => $createdCategories[0]->id,
+                'brand_id' => $createdBrands[0]->id,
+                'is_active' => true,
+            ],
+            [
+                'name' => 'شمع موتور NGK CR8HSA',
+                'slug' => 'ngk-cr8hsa-spark-plug',
+                'description' => 'شمع موتور باکیفیت NGK',
+                'price' => 38000,
+                'stock' => 3,
+                'category_id' => $createdCategories[0]->id,
+                'brand_id' => $createdBrands[0]->id,
+                'is_active' => true,
+            ],
+            [
+                'name' => 'دیسک ترمز جلو هوندا',
+                'slug' => 'honda-front-brake-disc',
+                'description' => 'دیسک ترمز جلوی موتورسیکلت',
+                'price' => 210000,
+                'stock' => 1,
+                'category_id' => $createdCategories[1]->id,
+                'brand_id' => $createdBrands[0]->id,
+                'is_active' => true,
+            ],
+            [
+                'name' => 'آینه بغل یاماها YZF',
+                'slug' => 'yamaha-yzf-side-mirror',
+                'description' => 'آینه بغل اصل یاماها',
+                'price' => 72000,
+                'stock' => 4,
+                'category_id' => $createdCategories[2]->id,
+                'brand_id' => $createdBrands[1]->id,
+                'is_active' => true,
+            ],
+        ];
+
+        foreach ($lowStock as $product) {
+            Product::create($product);
+        }
+
+        // Sample orders
+        $orders = [
+            ['LM-1042', 'محمد رضایی', 'صفحه کلاچ هوندا CG125', 125000, 'pending', Carbon::today()],
+            ['LM-1041', 'زهرا کریمی', 'لنت ترمز یاماها YZF150', 85000, 'shipped', Carbon::today()->subDay()],
+            ['LM-1040', 'علی محمدی', 'تایر یاماها 90/90-18', 350000, 'completed', Carbon::today()->subDays(2)],
+            ['LM-1039', 'فاطمه احمدی', 'لامپ روشنایی جلو هوندا', 45000, 'cancelled', Carbon::today()->subDays(3)],
+            ['LM-1038', 'حسین موسوی', 'شمع موتور NGK CR8HSA', 38000, 'completed', Carbon::today()->subDays(4)],
+            ['LM-1037', 'مریم حسینی', 'دیسک ترمز جلو هوندا', 210000, 'shipped', Carbon::today()->subDays(5)],
+            ['LM-1036', 'رضا قاسمی', 'زنجیر دینام هوندا CDI', 95000, 'completed', Carbon::today()->subDays(6)],
+        ];
+
+        foreach ($orders as $o) {
+            Order::create([
+                'order_number' => $o[0],
+                'customer_name' => $o[1],
+                'product_name' => $o[2],
+                'amount' => $o[3],
+                'status' => $o[4],
+                'ordered_at' => $o[5],
+            ]);
         }
     }
 }
