@@ -9,40 +9,40 @@ class Order extends Model
 {
     use HasFactory;
 
-    public const STATUSES = [
-        'pending' => 'Pending',
-        'paid' => 'Paid',
-        'processing' => 'Processing',
-        'shipped' => 'Shipped',
-        'delivered' => 'Delivered',
-        'cancelled' => 'Cancelled',
-    ];
-
     protected $fillable = [
-        'user_id',
+        'order_number',
+        'customer_name',
+        'customer_phone',
+        'product_name',
+        'amount',
         'status',
-        'total_amount',
-        'shipping_address_id',
-        'tracking_code',
-        'notes',
+        'ordered_at',
     ];
 
     protected $casts = [
-        'total_amount' => 'int',
+        'ordered_at' => 'date',
+        'amount' => 'integer',
     ];
 
-    public function user()
+    public function statusLabel(): string
     {
-        return $this->belongsTo(User::class);
+        return match ($this->status) {
+            'pending' => 'در انتظار',
+            'shipped' => 'ارسال شد',
+            'completed' => 'تکمیل',
+            'cancelled' => 'لغو شده',
+            default => $this->status,
+        };
     }
 
-    public function address()
+    public function statusColor(): string
     {
-        return $this->belongsTo(Address::class, 'shipping_address_id');
-    }
-
-    public function items()
-    {
-        return $this->hasMany(OrderItem::class);
+        return match ($this->status) {
+            'pending' => 'amber',
+            'shipped' => 'blue',
+            'completed' => 'green',
+            'cancelled' => 'red',
+            default => 'gray',
+        };
     }
 }

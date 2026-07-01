@@ -1,112 +1,88 @@
-@extends('components.admin-layout')
+@extends('layouts.admin')
 
-@section('header')
-    ویرایش دسته‌بندی
-@stop
+@section('title', 'ویرایش دسته‌بندی')
 
 @section('content')
-    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        @if ($errors->any())
-            <div class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-800">
-                <ul class="list-disc list-inside text-sm">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
+<div class="space-y-6 max-w-2xl">
 
-        @if (session('success'))
-            <div class="mb-4 p-4 bg-green-50 border-l-4 border-green-500 text-green-800">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        <form action="{{ route('admin.categories.update', $category) }}" method="POST" class="bg-white rounded-lg shadow overflow-hidden">
-            @csrf
-            @method('PUT')
-            <div class="px-6 py-6">
-                <h2 class="text-xl font-medium text-brand-charcoal mb-6">ویرایش دسته‌بندی: {{ $category->name_fa }}</h2>
-
-                <div class="grid grid-cols-1 gap-6 mb-6">
-                    <div>
-                        <label for="name_fa" class="block text-sm font-medium text-gray-700 mb-1">نام فارسی *</label>
-                        <input type="text" name="name_fa" id="name_fa" value="{{ old('name_fa', $category->name_fa) }}"
-                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent"
-                               required maxlength="255">
-                        @error('name_fa')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label for="name_en" class="block text-sm font-medium text-gray-700 mb-1">نام انگلیسی</label>
-                        <input type="text" name="name_en" id="name_en" value="{{ old('name_en', $category->name_en) }}"
-                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent"
-                               maxlength="255">
-                        @error('name_en')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label for="slug" class="block text-sm font-medium text-gray-700 mb-1">اسلاگ (اختیاری)</label>
-                        <input type="text" name="slug" id="slug" value="{{ old('slug', $category->slug) }}"
-                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent"
-                               maxlength="255">
-                        @error('slug')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                        <p class="mt-1 text-xs text-gray-500">اگر خالی بگذارید، خودکار از نام انگلیسی تولید می‌شود.</p>
-                    </div>
-
-                    <div>
-                        <label for="parent_id" class="block text-sm font-medium text-gray-700 mb-1">دسته والد</label>
-                        <select name="parent_id" id="parent_id"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent">
-                            <option value="">--- سطح ریشه (بدون والد) ---</option>
-                            @foreach($parents as $parent)
-                                @if($parent->id != $category->id)
-                                    <option value="{{ $parent->id }}" {{ old('parent_id', $category->parent_id) == $parent->id ? 'selected' : '' }}>
-                                        {{ $parent->name_fa }}
-                                    </option>
-                                @endif
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="icon" class="block text-sm font-medium text-gray-700 mb-1">آیکون (اختیاری)</label>
-                        <input type="text" name="icon" id="icon" value="{{ old('icon', $category->icon) }}"
-                               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent"
-                               placeholder="tag" maxlength="50">
-                        @error('icon')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
-                        <p class="mt-1 text-xs text-gray-500">نام آیکون از Lucide (مثل: tag, bike, truck)</p>
-                    </div>
-
-                    <div class="flex items-center">
-                        <div class="flex items-center mb-0">
-                            <input type="checkbox" name="is_active" id="is_active" {{ old('is_active', $category->is_active) ? 'checked' : '' }}
-                                   class="h-4 w-4 text-brand-red focus:ring-brand-red border-gray-300 rounded">
-                            <label for="is_active" class="ml-2 block text-sm font-medium text-gray-900">
-                                فعال
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="px-6 py-4 bg-gray-50 text-right">
-                <a href="{{ route('admin.categories.index') }}"
-                   class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors mr-2">
-                    انصراف
-                </a>
-                <button type="submit"
-                        class="px-6 py-2 bg-brand-red text-white font-medium rounded-md hover:bg-brand-red-dark transition-colors">
-                    ذخیره تغییرات
-                </button>
-            </div>
-        </form>
+    <div class="flex items-center justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-brand-charcoal">ویرایش دسته‌بندی</h1>
+            <p class="text-sm text-gray-500 mt-1">{{ $category->name }}</p>
+        </div>
+        <a href="{{ route('admin.categories.index') }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors">
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            <span>بازگشت</span>
+        </a>
     </div>
-@stop
+
+    @if($errors->any())
+        <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm flex items-center gap-2">
+            <i data-lucide="alert-circle" class="w-5 h-5 shrink-0"></i>
+            <span>لطفاً خطاهای فرم را برطرف کنید.</span>
+        </div>
+    @endif
+
+    <form method="POST" action="{{ route('admin.categories.update', $category) }}" class="bg-white rounded-2xl shadow-sm border border-gray-100/80 p-6 space-y-5">
+        @csrf
+        @method('PUT')
+
+        <div>
+            <label for="name" class="block text-sm font-medium text-brand-charcoal mb-2">نام دسته‌بندی <span class="text-brand-red">*</span></label>
+            <input type="text" id="name" name="name" value="{{ old('name', $category->name) }}" required class="w-full bg-gray-50 rounded-lg px-4 py-2.5 text-sm border border-gray-200 focus:ring-2 focus:ring-brand-red/30 focus:bg-white focus:border-brand-red/50 transition-all">
+            @error('name') <p class="text-xs text-brand-red mt-1.5">{{ $message }}</p> @enderror
+        </div>
+
+        <div>
+            <label for="slug" class="block text-sm font-medium text-brand-charcoal mb-2">شناسه (slug) <span class="text-brand-red">*</span></label>
+            <input type="text" id="slug" name="slug" value="{{ old('slug', $category->slug) }}" required dir="ltr" class="w-full bg-gray-50 rounded-lg px-4 py-2.5 text-sm border border-gray-200 focus:ring-2 focus:ring-brand-red/30 focus:bg-white focus:border-brand-red/50 transition-all font-num">
+            @error('slug') <p class="text-xs text-brand-red mt-1.5">{{ $message }}</p> @enderror
+        </div>
+
+        <div>
+            <label for="icon" class="block text-sm font-medium text-brand-charcoal mb-2">آیکون (نام Lucide)</label>
+            <input type="text" id="icon" name="icon" value="{{ old('icon', $category->icon) }}" dir="ltr" class="w-full bg-gray-50 rounded-lg px-4 py-2.5 text-sm border border-gray-200 focus:ring-2 focus:ring-brand-red/30 focus:bg-white focus:border-brand-red/50 transition-all font-num">
+            <p class="text-xs text-gray-400 mt-1.5">نام آیکون از کتابخانه <a href="https://lucide.dev/icons/" target="_blank" class="text-brand-red hover:underline">Lucide</a></p>
+            @error('icon') <p class="text-xs text-brand-red mt-1.5">{{ $message }}</p> @enderror
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-brand-charcoal mb-2">وضعیت</label>
+            <label class="flex items-center gap-3 bg-gray-50 rounded-lg px-4 py-2.5 border border-gray-200 cursor-pointer hover:bg-gray-100 transition-colors">
+                <button type="button" role="switch" @click="$refs.toggle.checked = !$refs.toggle.checked" :class="$refs.toggle.checked ? 'bg-brand-red' : 'bg-gray-300'" class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors shrink-0">
+                    <span :class="$refs.toggle.checked ? 'translate-x-5' : 'translate-x-0'" class="inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform"></span>
+                </button>
+                <input type="checkbox" x-ref="toggle" name="is_active" value="1" {{ old('is_active', $category->is_active) ? 'checked' : '' }} class="hidden">
+                <span class="text-sm text-gray-600" x-text="$refs.toggle.checked ? 'فعال' : 'غیرفعال'">فعال</span>
+            </label>
+        </div>
+
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+            <a href="{{ route('admin.categories.index') }}" class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors">انصراف</a>
+            <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-brand-red text-white rounded-lg text-sm font-medium hover:bg-brand-red-dark transition-colors shadow-sm">
+                <i data-lucide="save" class="w-4 h-4"></i>
+                <span>ذخیره تغییرات</span>
+            </button>
+        </div>
+    </form>
+
+</div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (window.anime) {
+            anime({
+                targets: '.space-y-6 > *',
+                opacity: [0, 1],
+                translateY: [12, 0],
+                duration: 400,
+                delay: anime.stagger(60),
+                easing: 'easeOutCubic',
+            });
+        }
+        window.renderIcons();
+    });
+</script>
+@endpush
+@endsection

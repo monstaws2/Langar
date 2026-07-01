@@ -5,102 +5,90 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::with('parent')
-            ->orderBy('name_en')
-            ->get();
+        $query = Category::withCount('products');
+
+        if ($search = $request->get('q')) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('slug', 'like', "%{$search}%");
+        }
+
+        if ($request->filled('status')) {
+            $query->where('is_active', $request->get('status') === 'active');
+        }
+
+        $categories = $query->latest()->paginate(15)->withQueryString();
 
         return view('admin.categories.index', compact('categories'));
     }
 
     public function create()
     {
-        // Only top-level categories can be parents
-        $parents = Category::whereNull('parent_id')
-            ->orderBy('name_en')
-            ->get();
-
-        return view('admin.categories.create', compact('parents'));
+        return view('admin.categories.create');
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name_fa' => 'required|string|max:255',
-            'name_en' => 'required|string|max:255',
-            'parent_id' => 'nullable|exists:categories,id',
-            'icon' => 'nullable|string|max:255',
-            'is_active' => 'boolean',
+            'name' => ['required', 'string', 'max:255'],
+            'slug' => ['required', 'string', 'max:255', 'unique:categories,slug'],
+            'icon' => ['nullable', 'string', 'max:255'],
+            'is_active' => ['boolean'],
         ]);
 
-        $validated['is_active'] = $validated['is_active'] ?? false;
+        if (empty($validated['slug'])) {
+            $validated['slug'] = Str::slug($validated['name']);
+        }
+
+        $validated['is_active'] = $request->boolean('is_active');
 
         Category::create($validated);
 
         return redirect()
             ->route('admin.categories.index')
-            ->with('success', 'Category created successfully.');
+            ->with('success', 'دسته‌بندی با موفقیت ایجاد شد.');
     }
 
     public function edit(Category $category)
     {
-        // Only top-level categories can be parents
-        $parents = Category::whereNull('parent_id')
-            ->orderBy('name_en')
-            ->get();
-
-        return view('admin.categories.edit', compact('category', 'parents'));
+        return view('admin.categories.edit', compact('category'));
     }
 
     public function update(Request $request, Category $category)
     {
         $validated = $request->validate([
-            'name_fa' => 'required|string|max:255',
-            'name_en' => [
-                'required',
-                'string',
-                'max:255',
-                Rule::unique('categories')->ignore($category->id),
-            ],
-            'parent_id' => [
-                'nullable',
-                'exists:categories,id',
-                Rule::notExists(function ($query) use ($category) {
-                    $query->where('id', $category->id);
-                }),
-            ],
-            'icon' => 'nullable|string|max:255',
-            'is_active' => 'boolean',
+            'name' => ['required', 'string', 'max:255'],
+            'slug' => ['required', 'string', 'max:255', 'unique:categories,slug,' . $category->id],
+            'icon' => ['nullable', 'string', 'max:255'],
+            'is_active' => ['boolean'],
         ]);
 
-        $validated['is_active'] = $validated['is_active'] ?? false;
+        $validated['is_active'] = $request->boolean('is_active');
 
         $category->update($validated);
 
         return redirect()
             ->route('admin.categories.index')
-            ->with('success', 'Category updated successfully.');
+            ->with('success', 'دسته‌بندی با موفقیت به‌روزرسانی شد.');
     }
 
     public function destroy(Category $category)
     {
-        // Check if category has children
-        if ($category->children()->exists()) {
+        if ($category->products()->exists()) {
             return redirect()
                 ->route('admin.categories.index')
-                ->with('error', 'Cannot delete category with child categories. Delete or move child categories first.');
+                ->with('error', 'این دسته‌بندی دارای محصول است و قابل حذف نیست.');
         }
 
         $category->delete();
 
         return redirect()
             ->route('admin.categories.index')
-            ->with('success', 'Category deleted successfully.');
+            ->with('success', 'دسته‌بندی حذف شد.');
     }
 }

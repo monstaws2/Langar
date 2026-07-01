@@ -1,12 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\BrandController as AdminBrandController;
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\HomeController;
-// This line will be removed as it's a duplicate and causes a naming conflict.
-// use App\Http\Controllers\ProductController;use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ContactController;
@@ -39,23 +40,22 @@ Route::post('/contact', [ContactController::class, 'store'])->name('contact.stor
 Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');
 Route::get('/brands/{slug}', [BrandController::class, 'show'])->name('brands.show');
 
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::prefix('admin')->middleware(['auth', 'isAdmin'])->group(function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
-    Route::resource('products', ProductController::class)->names('admin.products');
-    Route::resource('orders', OrderController::class)->only(['index','show'])->names('admin.orders');
-    Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus'])->name('admin.orders.status');
+// Admin
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::resource('products', AdminProductController::class);
+    Route::resource('categories', AdminCategoryController::class);
+    Route::resource('brands', AdminBrandController::class);
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->middleware('verified')->name('dashboard');
-
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
 
 require __DIR__.'/auth.php';
