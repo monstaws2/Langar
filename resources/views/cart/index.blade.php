@@ -25,11 +25,83 @@
             </a>
         </div>
     @else
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8" id="cart-content">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8" id="cart-content" x-data="{
+            updateQuantity(itemId, newQty, originalQty, price) {
+                // Send AJAX request to update cart
+                const url = "{{ url('cart/update/0') }}".replace('0', itemId);
+                const formData = new FormData();
+                formData.append('_token', Laravel.csrfToken);
+                formData.append('quantity', newQty);
+
+                fetch(url, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network error');
+                    }
+                    return response.text(); // we expect a redirect, but we ignore body
+                })
+                .then(() => {
+                    // Optimistic update: update UI
+                    this.updateItemUI(itemId, newQty, price);
+                })
+                .catch(error => {
+                    // Revert change on error
+                    alert('خطا در به‌روزرسانی سبد خرید. لطفاً دوباره امتحان کنید.');
+                    this.updateItemUI(itemId, originalQty, price);
+                });
+            },
+            updateItemUI(itemId, newQty, price) {
+                const itemEl = document.querySelector(`[data-item-id='${itemId}']`);
+                if (!itemEl) return;
+
+                // Update quantity display
+                const qtyDisplay = itemEl.querySelector('.item-quantity');
+                if (qtyDisplay) {
+                    qtyDisplay.textContent = newQty;
+                }
+
+                // Update subtotal
+                const subtotal = newQty * price;
+                const subtotalEl = itemEl.querySelector('.item-subtotal');
+                if (subtotalEl) {
+                    subtotalEl.textContent = new Intl.NumberFormat('fa-IR').format(subtotal);
+                }
+
+                // Update total cart price
+                this.updateCartTotal();
+            },
+            updateCartTotal() {
+                let total = 0;
+                document.querySelectorAll('.item-subtotal').forEach(el => {
+                    const val = parseFloat(el.textContent.replace(/[^\d.-]/g, '')) || 0;
+                    total += val;
+                });
+                const totalEl = document.querySelector('#cart-total-amount');
+                if (totalEl) {
+                    totalEl.textContent = new Intl.NumberFormat('fa-IR').format(Math.round(total));
+                }
+            }
+        }">
             <!-- Items column -->
             <div class="lg:col-span-2 space-y-4">
                 @foreach($cartItems as $item)
-                    <div class="bg-white rounded-2xl shadow-sm p-4 sm:p-5">
+                    <div
+                        :key="'item-{{ $item->id }}'"
+                        data-item-id="{{ $item->id }}"
+                        class="bg-white rounded-2xl shadow-sm p-4 sm:p-5"
+                        x-data="{
+                            quantity: {{ $item->quantity }},
+                            price: {{ $item->price }},
+                            id: {{ $item->id }}
+                        }"
+                        x-init="console.log('Item init:', this.id)"
+                    >
                         <div class="flex items-center gap-4">
                             <!-- Product image / icon -->
                             <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-brand-offwhite flex items-center justify-center shrink-0">
@@ -62,25 +134,30 @@
 
                             <!-- Desktop: quantity, subtotal, remove -->
                             <div class="hidden sm:flex items-center gap-5">
-                                <!-- Quantity + update -->
-                                <div class="text-center">
-                                    <form action="{{ route('cart.update', $item->id) }}" method="POST" class="flex items-center gap-1.5">
-                                        @csrf
-                                        <input type="number" name="quantity" value="{{ $item->quantity }}"
-                                            min="1" max="999"
-                                            class="w-16 text-center border border-gray-200 rounded-lg py-1.5 text-sm font-num focus:ring-2 focus:ring-brand-orange focus:border-transparent">
-                                        <button type="submit"
-                                            class="inline-flex items-center justify-center w-8 h-8 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-lg text-xs font-bold transition"
-                                            aria-label="به‌روزرسانی">
-                                            <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                                        </button>
-                                    </form>
+                                <!-- Quantity stepper -->
+                                <div class="text-center flex items-center gap-2">
+                                    <button
+                                        type="button"
+                                        @click="if (quantity > 1) { quantity--; updateQuantity(id, quantity, quantity + 1, price); }"
+                                        :disabled="quantity <= 1"
+                                        class="p-1 rounded-lg border border-gray-300 bg-gray-50 hover:bg-gray-100 text-brand-red hover:text-brand-red-dark"
+                                    >
+                                        <i data-lucide="minus" class="w-4 h-4"></i>
+                                    </button>
+                                    <span class="item-quantity w-8 text-center font-num">{{ $item->quantity }}</span>
+                                    <button
+                                        type="button"
+                                        @click="quantity++; updateQuantity(id, quantity, quantity - 1, price);"
+                                        class="p-1 rounded-lg border border-gray-300 bg-gray-50 hover:bg-gray-100 text-brand-red hover:text-brand-red-dark"
+                                    >
+                                        <i data-lucide="plus" class="w-4 h-4"></i>
+                                    </button>
                                 </div>
 
                                 <!-- Subtotal -->
-                                <div class="text-center min-w-[90px]">
-                                    <div class="font-bold text-brand-charcoal font-num">{{ \App\Support\Format::price($item->line_total) }}</div>
-                                    <div class="text-xs text-gray-400">تومان</div>
+                                <div class="text-center min-w-[90px] item-subtotal">
+                                    <span class="font-bold text-brand-charcoal font-num">{{ \App\Support\Format::price($item->line_total) }}</span>
+                                    <span class="text-xs text-gray-400">تومان</span>
                                 </div>
 
                                 <!-- Desktop remove -->
@@ -97,19 +174,27 @@
 
                         <!-- Mobile: quantity + subtotal -->
                         <div class="sm:hidden flex items-center justify-between gap-3 mt-3 pt-3 border-t border-gray-100">
-                            <form action="{{ route('cart.update', $item->id) }}" method="POST" class="flex items-center gap-1.5">
-                                @csrf
-                                <input type="number" name="quantity" value="{{ $item->quantity }}"
-                                    min="1" max="999"
-                                    class="w-14 text-center border border-gray-200 rounded-lg py-1 text-sm font-num focus:ring-2 focus:ring-brand-orange focus:border-transparent">
-                                <button type="submit"
-                                    class="inline-flex items-center justify-center w-7 h-7 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-lg text-xs font-bold transition">
-                                    <i data-lucide="check" class="w-3 h-3"></i>
+                            <div class="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    @click="if (quantity > 1) { quantity--; updateQuantity(id, quantity, quantity + 1, price); }"
+                                    :disabled="quantity <= 1"
+                                    class="p-1 rounded-lg border border-gray-300 bg-gray-50 hover:bg-gray-100 text-brand-red hover:text-brand-red-dark"
+                                >
+                                    <i data-lucide="minus" class="w-3 h-3"></i>
                                 </button>
-                            </form>
+                                <span class="item-quantity w-6 text-center font-num">{{ $item->quantity }}</span>
+                                <button
+                                    type="button"
+                                    @click="quantity++; updateQuantity(id, quantity, quantity - 1, price);"
+                                    class="p-1 rounded-lg border border-gray-300 bg-gray-50 hover:bg-gray-100 text-brand-red hover:text-brand-red-dark"
+                                >
+                                    <i data-lucide="plus" class="w-3 h-3"></i>
+                                </button>
+                            </div>
                             <div class="text-right">
                                 <div class="text-xs text-gray-400">جمع</div>
-                                <div class="font-bold text-brand-charcoal font-num">{{ \App\Support\Format::price($item->line_total) }}</div>
+                                <div class="font-bold text-brand-charcoal font-num item-subtotal-mobile">{{ \App\Support\Format::price($item->line_total) }}</div>
                             </div>
                         </div>
                     </div>
@@ -134,11 +219,11 @@
                 <div class="space-y-4">
                     <div class="flex justify-between text-gray-600">
                         <span>تعداد کالا:</span>
-                        <span class="font-num font-bold text-brand-charcoal">{{ \App\Support\Format::digits($totalQuantity) }}</span>
+                        <span class="font-num font-bold text-brand-charcoal" id="cart-total-quantity">{{ \App\Support\Format::digits($totalQuantity) }}</span>
                     </div>
                     <div class="flex justify-between text-gray-600">
                         <span>جمع کل:</span>
-                        <span class="font-num font-bold text-brand-charcoal">{{ \App\Support\Format::price($total) }} <span class="text-xs font-normal text-gray-400">تومان</span></span>
+                        <span class="font-num font-bold text-brand-charcoal" id="cart-total-amount">{{ \App\Support\Format::price($total) }} <span class="text-xs font-normal text-gray-400">تومان</span></span>
                     </div>
                     <div class="flex justify-between text-gray-600">
                         <span>هزینه ارسال:</span>

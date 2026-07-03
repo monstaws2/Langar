@@ -55,6 +55,7 @@ Route::get('/dashboard', function () {
 // Admin
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class)->except(['create', 'store']);
     Route::resource('products', AdminProductController::class);
     Route::resource('categories', AdminCategoryController::class);
     Route::resource('brands', AdminBrandController::class);

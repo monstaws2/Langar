@@ -48,7 +48,7 @@
                 <i data-lucide="package" class="w-5 h-5 shrink-0"></i>
                 <span>محصولات</span>
             </a>
-            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white transition-colors">
+            <a href="{{ route('admin.orders.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white transition-colors">
                 <i data-lucide="shopping-cart" class="w-5 h-5 shrink-0"></i>
                 <span>سفارش‌ها</span>
             </a>
