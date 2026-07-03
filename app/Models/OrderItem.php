@@ -12,14 +12,15 @@ class OrderItem extends Model
     protected $fillable = [
         'order_id',
         'product_id',
+        'product_name',
+        'price',
         'quantity',
-        'unit_price',
         'total_price',
     ];
 
     protected $casts = [
-        'unit_price' => 'int',
-        'total_price' => 'int',
+        'price' => 'integer',
+        'quantity' => 'integer',
     ];
 
     public function order()

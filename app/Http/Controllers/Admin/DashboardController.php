@@ -13,14 +13,14 @@ class DashboardController extends Controller
     {
         $today = Carbon::today();
 
-        $ordersToday = Order::whereDate('ordered_at', $today)->count();
-        $revenueToday = Order::whereDate('ordered_at', $today)
-            ->whereIn('status', ['completed', 'shipped'])
-            ->sum('amount');
+        $ordersToday = Order::whereDate('created_at', $today)->count();
+        $revenueToday = Order::whereDate('created_at', $today)
+            ->whereIn('status', ['paid', 'shipped', 'delivered'])
+            ->sum('total_price');
         $productsCount = Product::count();
         $lowStockCount = Product::where('stock', '<', 5)->where('is_active', true)->count();
 
-        $recentOrders = Order::latest('ordered_at')->take(5)->get();
+        $recentOrders = Order::latest('created_at')->take(5)->get();
         $lowStockProducts = Product::where('stock', '<', 5)
             ->where('is_active', true)
             ->take(4)
@@ -32,9 +32,9 @@ class DashboardController extends Controller
             return [
                 'date' => $date,
                 'label' => $date->translatedFormat('j F'),
-                'value' => (int) Order::whereDate('ordered_at', $date)
-                    ->whereIn('status', ['completed', 'shipped'])
-                    ->sum('amount'),
+                'value' => (int) Order::whereDate('created_at', $date)
+                    ->whereIn('status', ['paid', 'shipped', 'delivered'])
+                    ->sum('total_price'),
             ];
         });
 

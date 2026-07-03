@@ -35,7 +35,7 @@
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">مشتری</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">تاریخ</th>
-                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">مبلغ</th>
+                        <th scope="colspan="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">مبلغ</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">وضعیت</th>
                         <th scope="col" class="relative px-6 py-3"><span class="sr-only">عملیات</span></th>
                     </tr>
@@ -55,16 +55,15 @@
                                 <span class="text-xs">{{ $order->created_at->format('H:i') }}</span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium font-num text-right">
-                                {{ number_format($order->total_amount) }} تومان
+                                {{ \App\Support\Format::price($order->total_price) }} تومان
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                 <span class="px-2 py-1 text-xs font-medium rounded-full
                                     @if($order->status == 'paid') bg-green-100 text-green-800
-                                    @elseif($order->status == 'processing') bg-blue-100 text-blue-800
-                                    @elseif($order->status == 'shipped') bg-indigo-100 text-indigo-800
+                                    @elseif($order->status == 'shipped') bg-blue-100 text-blue-800
                                     @elseif($order->status == 'delivered') bg-indigo-100 text-indigo-800
                                     @elseif($order->status == 'cancelled') bg-red-100 text-red-800
-                                    @else bg-yellow-100 text-yellow-800
+                                    @else bg-gray-100 text-gray-700
                                     endif">
                                     {{ ucfirst($order->status) }}
                                 </span>
@@ -88,7 +87,7 @@
 
         <div class="mt-6 flex justify-between items-center">
             <div class="flex items-center">
-                Showing {{ $orders->firstItem() }} to {{ $orders->lastItem() }} of {{ $orders->total() }} orders
+                نمایش {{ $orders->firstItem() }} تا {{ $orders->lastItem() }} از {{ $orders->total() }} سفارش
             </div>
             <div class="flex items-center">
                 {{ $orders->links() }}

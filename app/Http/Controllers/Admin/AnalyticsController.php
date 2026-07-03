@@ -22,13 +22,13 @@ class AnalyticsController extends Controller
         $totalProducts = Product::where('is_active', true)->count();
         $totalOrders = Order::count();
         $totalCustomers = User::where('is_admin', false)->count();
-        $totalRevenue = Order::whereIn('status', ['paid', 'processing', 'shipped', 'delivered'])->sum('total_amount');
+        $totalRevenue = Order::whereIn('status', ['paid', 'shipped', 'delivered'])->sum('total_price');
 
         // Get recent orders for activity feed
         $recentOrders = Order::with(['user'])->latest()->take(10)->get();
 
         // Get top selling products
-        $topProducts = Product::withCount('orderItems as sales_count')
+        $topProducts = Product::withCount('items as sales_count')
             ->orderByDesc('sales_count')
             ->take(5)
             ->get();
@@ -48,8 +48,8 @@ class AnalyticsController extends Controller
             $month = $now->copy()->subMonths($i);
             $sales = Order::whereYear('created_at', $month->year)
                 ->whereMonth('created_at', $month->month)
-                ->whereIn('status', ['paid', 'processing', 'shipped', 'delivered'])
-                ->sum('total_amount');
+                ->whereIn('status', ['paid', 'shipped', 'delivered'])
+                ->sum('total_price');
 
             $monthlyLabels[] = $month->format('M Y');
             $monthlySalesData[] = (int) $sales;
@@ -61,8 +61,8 @@ class AnalyticsController extends Controller
         // Add recent orders as activities
         foreach ($recentOrders->take(5) as $order) {
             $recentActivities[] = [
-                'title' => 'سفارش جدید از ' . $order->user->name,
-                'description' => 'مبلغ ' . number_format($order->total_amount) . ' تومان',
+                'title' => 'سفارش جدید از ' . $order->name,
+                'description' => 'مبلغ ' . \App\Support\Format::price($order->total_price) . ' تومان',
                 'time' => $order->created_at->diffForHumans(),
                 'icon' => 'shopping-cart',
                 'color' => 'text-brand-red'

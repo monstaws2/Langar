@@ -145,10 +145,10 @@
                         <span class="text-green-600 font-semibold">رایگان</span>
                     </div>
                     <div class="border-t border-gray-100 pt-4 space-y-3">
-                        <button class="w-full inline-flex items-center justify-center gap-2 bg-brand-red hover:bg-brand-red-dark text-white py-3 rounded-lg font-bold transition">
+                        <a href="{{ route('checkout.index') }}" class="w-full inline-flex items-center justify-center gap-2 bg-brand-red hover:bg-brand-red-dark text-white py-3 rounded-lg font-bold transition">
                             <i data-lucide="credit-card" class="w-5 h-5"></i>
                             تکمیل سفارش
-                        </button>
+                        </a>
                         <a href="{{ route('products.index') }}"
                             class="block text-center w-full inline-flex items-center justify-center gap-2 border border-gray-200 text-brand-charcoal hover:bg-brand-offwhite py-3 rounded-lg font-bold transition">
                             <i data-lucide="arrow-left" class="w-5 h-5"></i>

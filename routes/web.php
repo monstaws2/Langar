@@ -12,6 +12,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\BrandController;
+use App\Http\Controllers\CheckoutController;
 use Illuminate\Support\Facades\Route;
 
 // Home
@@ -30,6 +31,11 @@ Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.a
 Route::post('/cart/update/{product}', [CartController::class, 'update'])->name('cart.update');
 Route::post('/cart/remove/{product}', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+
+// Checkout
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::get('/checkout/confirmation/{order}', [CheckoutController::class, 'confirmation'])->name('checkout.confirmation');
 
 // Search
 Route::get('/search', [SearchController::class, 'index'])->name('search.index');
