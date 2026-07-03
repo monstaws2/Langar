@@ -27,7 +27,9 @@ Route::get('/categories/{slug}', [CategoryController::class, 'show'])->name('cat
 // Cart
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
-Route::delete('/cart/remove/{product}', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/update/{product}', [CartController::class, 'update'])->name('cart.update');
+Route::post('/cart/remove/{product}', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 
 // Search
 Route::get('/search', [SearchController::class, 'index'])->name('search.index');
