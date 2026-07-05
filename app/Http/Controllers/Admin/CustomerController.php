@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -14,7 +15,7 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::where('is_admin', false); // Exclude admins
+        $query = User::where('is_admin', false);
 
         // Search functionality
         if ($request->filled('search')) {
@@ -25,30 +26,43 @@ class CustomerController extends Controller
             });
         }
 
-        $customers = $query->withCount('orders')->orderBy('name')->paginate(20);
+        // Filter by customer activity
+        if ($request->filled('filter')) {
+            switch ($request->filter) {
+                case 'with_orders':
+                    $query->has('orders');
+                    break;
+                case 'without_orders':
+                    $query->doesntHave('orders');
+                    break;
+                case 'recent':
+                    $query->where('created_at', '>=', now()->subDays(30));
+                    break;
+            }
+        }
 
-        return view('admin.customers.index', compact('customers'));
-    }
+        $customers = $query->withCount('orders')
+            ->withSum('orders as total_spent', 'total_price')
+            ->orderBy('created_at', 'desc')
+            ->paginate(20)
+            ->withQueryString();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+        // Summary stats
+        $totalCustomers = User::where('is_admin', false)->count();
+        $newThisMonth = User::where('is_admin', false)
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+        $withOrders = User::where('is_admin', false)->has('orders')->count();
+        $totalRevenue = Order::whereIn('status', ['paid', 'shipped', 'delivered'])->sum('total_price');
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+        return view('admin.customers.index', compact(
+            'customers',
+            'totalCustomers',
+            'newThisMonth',
+            'withOrders',
+            'totalRevenue'
+        ));
     }
 
     /**
@@ -57,43 +71,25 @@ class CustomerController extends Controller
     public function show(User $customer)
     {
         $customer->load(['orders' => function($query) {
-            $query->withCount('items')->latest()->limit(5);
+            $query->withCount('items')->latest();
         }]);
 
-        return view('admin.customers.show', compact('customer'));
-    }
+        $totalOrders = $customer->orders->count();
+        $totalSpent = $customer->orders
+            ->whereIn('status', ['paid', 'shipped', 'delivered'])
+            ->sum('total_price');
+        $averageOrderValue = $totalOrders > 0 ? round($totalSpent / $totalOrders) : 0;
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \Illuminate\App\Models\User  $customer
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(User $customer)
-    {
-        //
-    }
+        $ordersByStatus = $customer->orders->groupBy('status')
+            ->map(fn($group) => $group->count())
+            ->toArray();
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Illuminate\App\Models\User  $customer
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, User $customer)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \Illuminate\App\Models\User  $customer
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(User $customer)
-    {
-        //
+        return view('admin.customers.show', compact(
+            'customer',
+            'totalOrders',
+            'totalSpent',
+            'averageOrderValue',
+            'ordersByStatus'
+        ));
     }
 }
