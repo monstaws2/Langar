@@ -48,11 +48,11 @@
                 <i data-lucide="package" class="w-5 h-5 shrink-0"></i>
                 <span>محصولات</span>
             </a>
-            <a href="{{ route('admin.orders.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white transition-colors">
+            <a href="{{ route('admin.orders.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.orders.*') ? 'bg-brand-red text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
                 <i data-lucide="shopping-cart" class="w-5 h-5 shrink-0"></i>
                 <span>سفارش‌ها</span>
             </a>
-            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white transition-colors">
+            <a href="{{ route('admin.customers.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.customers.*') ? 'bg-brand-red text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
                 <i data-lucide="users" class="w-5 h-5 shrink-0"></i>
                 <span>مشتریان</span>
             </a>
@@ -64,11 +64,19 @@
                 <i data-lucide="tags" class="w-5 h-5 shrink-0"></i>
                 <span>برندها</span>
             </a>
-            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white transition-colors">
+            <a href="{{ route('admin.motorcycle-models.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.motorcycle-models.*') ? 'bg-brand-red text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
+                <i data-lucide="bike" class="w-5 h-5 shrink-0"></i>
+                <span>مدل‌های موتور</span>
+            </a>
+            <a href="{{ route('admin.inventory.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.inventory.*') ? 'bg-brand-red text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
+                <i data-lucide="package-check" class="w-5 h-5 shrink-0"></i>
+                <span>انبار</span>
+            </a>
+            <a href="{{ route('admin.analytics.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.analytics.*') ? 'bg-brand-red text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
                 <i data-lucide="bar-chart-3" class="w-5 h-5 shrink-0"></i>
                 <span>گزارش‌ها</span>
             </a>
-            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-gray-300 hover:bg-white/5 hover:text-white transition-colors">
+            <a href="{{ route('admin.settings.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.settings.*') ? 'bg-brand-red text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
                 <i data-lucide="settings" class="w-5 h-5 shrink-0"></i>
                 <span>تنظیمات</span>
             </a>
