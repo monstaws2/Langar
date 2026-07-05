@@ -1,9 +1,10 @@
 @extends('layouts.admin')
 
-@section('title', 'سفارشات')
+@section('title', 'سفارش‌ها')
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
     @if (session('success'))
         <div class="mb-4 p-4 bg-green-50 border-l-4 border-green-500 text-green-800">
             {{ session('success') }}
@@ -19,31 +20,29 @@
     <div class="mb-6 flex justify-between items-center">
         <div class="flex items-center space-x-3">
             <i data-lucide="truck" class="w-5 h-5 text-brand-red"></i>
-            <h2 class="text-xl font-bold text-brand-charcoal">سفارشات</h2>
+            <h2 class="text-xl font-bold text-brand-charcoal">سفارش‌ها</h2>
         </div>
-        <div class="flex items-center space-x-2">
-            <select wire:model.live="statusFilter" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-red">
-                <option value="">تمام وضعیت‌ها</option>
+
+        <form action="{{ route('admin.orders.index') }}" method="GET" class="flex items-center gap-2">
+            <select name="status" onchange="this.form.submit()" class="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-brand-red">
+                <option value="">همه وضعیت‌ها</option>
                 <option value="pending">در انتظار</option>
                 <option value="paid">پرداخت شده</option>
                 <option value="shipped">ارسال شده</option>
                 <option value="delivered">تحویل شده</option>
                 <option value="cancelled">لغو شده</option>
             </select>
-            <a href="{{ route('admin.orders.index') }}" class="text-sm font-medium text-brand-red hover:text-brand-red-dark">
-                بازآرایی <i data-lucide="rotate-ccw" class="ml-2 h-4 w-4"></i>
-            </a>
-        </div>
+        </form>
     </div>
 
     <div class="overflow-x-auto bg-white rounded-lg shadow">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">مشتری</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">شماره سفارش</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">نام مشتری</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">تلفن</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">مبلغ</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">مبلغ کل</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">وضعیت</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">تاریخ</th>
                     <th scope="col" class="relative px-6 py-3"><span class="sr-only">عملیات</span></th>
@@ -55,8 +54,6 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{{ str_pad($order->id, 6, '0', STR_PAD_LEFT) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-brand-charcoal">
                             {{ $order->name }}
-                            <br>
-                            <span class="text-xs text-gray-500">{{ $order->email }}</span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {{ $order->phone }}
@@ -66,12 +63,12 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <span class="px-2 py-1 text-xs font-medium rounded-full
-                                @if($order->status == 'paid') bg-green-100 text-green-800
-                                @elseif($order->status == 'shipped') bg-blue-100 text-blue-800
-                                @elseif($order->status == 'delivered') bg-indigo-100 text-indigo-800
-                                @elseif($order->status == 'cancelled') bg-red-100 text-red-800
-                                @else bg-yellow-100 text-yellow-800
-                                endif">
+                                @switch($order->status)
+                                    @case('paid') bg-green-100 text-green-800 @break
+                                    @case('shipped') bg-blue-100 text-blue-800 @break
+                                    @case('delivered') bg-indigo-100 text-indigo-800 @break
+                                    @case('cancelled') bg-red-100 text-red-800 @break
+                                    @default bg-yellow-100 text-yellow-800 @endswitch">
                                 {{ ucfirst($order->status) }}
                             </span>
                         </td>

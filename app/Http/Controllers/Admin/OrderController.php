@@ -13,24 +13,13 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Order::with(['user', 'items.product']);
+        $query = Order::with('items.product')->latest();
 
-        if ($request->has('search') && $request->search != '') {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->whereHas('user', function ($userQuery) use ($search) {
-                    $userQuery->where('name', 'like', "%{$search}%");
-                })->orWhereHas('items.product', function ($productQuery) use ($search) {
-                    $productQuery->where('name', 'like', "%{$search}%");
-                });
-            });
-        }
-
-        if ($request->has('status') && $request->status != '') {
+        if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        $orders = $query->latest()->paginate(15);
+        $orders = $query->paginate(15)->withQueryString();
 
         return view('admin.orders.index', compact('orders'));
     }
@@ -40,7 +29,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
-        $order->load(['user', 'items.product']);
+        $order->load('items.product');
         return view('admin.orders.show', compact('order'));
     }
 
