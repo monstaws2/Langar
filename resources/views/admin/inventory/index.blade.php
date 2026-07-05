@@ -1,151 +1,194 @@
-@extends('components.admin-layout')
+@extends('layouts.admin')
 
-@section('header')
-    انبار
-@stop
+@section('title', 'مدیریت انبار')
 
 @section('content')
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        @if (session('success'))
-            <div class="mb-4 p-4 bg-green-50 border-l-4 border-green-500 text-green-800">
-                {{ session('success') }}
-            </div>
-        @endif
+<div class="space-y-6">
 
-        @if (session('error'))
-            <div class="mb-4 p-4 bg-red-50 border-l-4 border-red-500 text-red-800">
-                {{ session('error') }}
-            </div>
-        @endif
-
-        <div class="mb-6 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <i data-lucide="package-check" class="w-5 h-5 text-brand-red"></i>
-                <h2 class="text-xl font-bold text-brand-charcoal">گزارش‌های انبار</h2>
-            </div>
-            <a href="{{ route('admin.inventory.export') }}" class="inline-flex items-center px-4 py-2 bg-brand-red text-white font-medium rounded-md hover:bg-brand-red-dark transition-colors">
-                <i data-lucide="download" class="mr-2 h-4 w-4"></i>
-                xuất khẩu گزارش
-            </a>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Inventory Adjustment -->
-            <div class="bg-white rounded-xl shadow overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-bold text-brand-charcoal">تنظیمات انبار</h2>
-                </div>
-                <div class="p-6">
-                    <form action="{{ route('admin.inventory.adjust') }}" method="POST" class="space-y-4">
-                        @csrf
-                        <div>
-                            <label for="product_id" class="block text-sm font-medium text-gray-700 mb-1">محصول</label>
-                            <select name="product_id" id="product_id" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent">
-                                <option value="">--- انتخاب محصول ---</option>
-                                @foreach($products as $product)
-                                    <option value="{{ $product->id }}">{{ $product->name_fa }} ({{ $product->stock_quantity }} در انبار)</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label for="change_amount" class="block text-sm font-medium text-gray-700 mb-1">مقدار تغییر</label>
-                                <input type="number" name="change_amount" id="change_amount" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent" placeholder="مثبت برای افزودن، منفی برای کاهش">
-                            </div>
-                            <div>
-                                <label for="reason" class="block text-sm font-medium text-gray-700 mb-1">دلیل</label>
-                                <select name="reason" id="reason" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent">
-                                    <option value="purchase">خرید</option>
-                                    <option value="sale">فروش</option>
-                                    <option value="adjustment">تنظیمات يدوي</option>
-                                    <option value="damage">ضايعات</option>
-                                    <option value="loss">Gu mất</option>
-                                    <option value="correction">تصحیح</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div>
-                            <label for="note" class="block text-sm font-medium text-gray-700 mb-1">یادداشت (اختیاری)</label>
-                            <textarea name="note" id="note" rows="3" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-red focus:border-transparent"></textarea>
-                        </div>
-                        <div class="flex items-center justify-end">
-                            <button type="submit" class="px-6 py-2 bg-brand-red text-white font-medium rounded-md hover:bg-brand-red-dark transition-colors">
-                                اعمال تغییر
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Inventory Logs -->
-            <div class="bg-white rounded-xl shadow overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-bold text-brand-charcoal">تاریخچهٔ تغییرات انبار</h2>
-                </div>
-                <div class="p-4">
-                    @if($inventoryLogs->isEmpty())
-                        <div class="text-center py-12 text-gray-500">
-                            <i data-lucide="truck" class="w-12 h-12 mx-auto mb-4 text-gray-300"></i>
-                            <p>هیچ बदल انباری یافت نشد.</p>
-                        </div>
-                    @else
-                        <div class="space-y-3">
-                            @foreach($inventoryLogs->take(10) as $log)
-                                <div class="border-b border-gray-200 pb-3 last:border-0 last:pb-0">
-                                    <div class="flex justify-between items-start mb-2">
-                                        <div class="flex-1">
-                                            <p class="font-medium text-gray-900">{{ $log->product->name_fa }}</p>
-                                            <p class="text-sm text-gray-500">{{ $log->created_at->format('Y/m/d H:i') }}</p>
-                                        </div>
-                                        <span class="px-2 py-1 text-xs font-medium rounded-full
-                                            @if($log->change_amount > 0) bg-green-100 text-green-800
-                                            @else bg-red-100 text-red-800
-                                            endif">
-                                            {{ $log->change_amount > 0 ? '+' : '' }}{{ $log->change_amount }}
-                                        </span>
-                                    </div>
-                                    <p class="text-sm text-gray-600">{{ ucfirst($log->reason) }}</p>
-                                    @if($log->note)
-                                        <p class="text-xs text-gray-500 mt-1">{{ $log->note }}</p>
-                                    @endif
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-            <!-- Low Stock Alert -->
-            <div class="bg-white rounded-xl shadow overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-200">
-                    <h2 class="text-xl font-bold text-brand-charcoal">هشدار موجودی کم</h2>
-                </div>
-                <div class="p-4">
-                    @if($lowStockProducts->isEmpty())
-                        <div class="text-center py-8 text-gray-500">
-                            <i data-lucide="check-circle" class="w-10 h-10 mx-auto mb-3 text-green-400"></i>
-                            <p>هیچ محصولی با موجودی کم نیست.</p>
-                        </div>
-                    @else
-                        <div class="space-y-2">
-                            @foreach($lowStockProducts as $product)
-                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                                    <div class="flex items-center">
-                                        <i data-lucide="alert-triangle" class="w-4 h-4 mr-2 text-brand-red"></i>
-                                        <div>
-                                            <p class="font-medium text-gray-900">{{ $product->name_fa }}</p>
-                                            <p class="text-sm text-gray-500">موجودی: <span class="font-bold text-red-600">{{ $product->stock_quantity }}</span></p>
-                                        </div>
-                                    </div>
-                                    <span class="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
-                                        کم
-                                    </span>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
-                </div>
-            </div>
+    {{-- Header --}}
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-bold text-brand-charcoal">انبار</h1>
+            <p class="text-sm text-gray-500 mt-1">مدیریت موجودی و تنظیمات انبار</p>
         </div>
     </div>
-@stop
+
+    @if (session('success'))
+        <div class="bg-green-50 border border-green-200 text-green-700 rounded-xl px-4 py-3 text-sm flex items-center gap-2">
+            <i data-lucide="check-circle" class="w-5 h-5 shrink-0"></i>
+            <span>{{ session('success') }}</span>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm flex items-center gap-2">
+            <i data-lucide="alert-circle" class="w-5 h-5 shrink-0"></i>
+            <span>{{ session('error') }}</span>
+        </div>
+    @endif
+
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+        {{-- Inventory Adjustment Form --}}
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100/80 p-6">
+            <div class="flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+                    <i data-lucide="sliders" class="w-5 h-5 text-blue-600"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-brand-charcoal">تنظیم موجودی</h3>
+                    <p class="text-xs text-gray-500">افزایش یا کاهش موجودی محصول</p>
+                </div>
+            </div>
+
+            <form action="{{ route('admin.inventory.adjust') }}" method="POST" class="space-y-4">
+                @csrf
+                <div>
+                    <label for="product_id" class="block text-sm font-medium text-gray-700 mb-1">محصول</label>
+                    <select name="product_id" id="product_id" class="w-full bg-gray-50 rounded-lg px-3 py-2.5 text-sm border border-gray-200 focus:ring-2 focus:ring-brand-red/30 focus:bg-white focus:border-brand-red/50 transition-all">
+                        <option value="">انتخاب محصول...</option>
+                        @foreach($products as $product)
+                            <option value="{{ $product->id }}">{{ $product->name }} ({{ \App\Support\Format::digits($product->stock) }} عدد)</option>
+                        @endforeach
+                    </select>
+                    @error('product_id')
+                        <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label for="change_amount" class="block text-sm font-medium text-gray-700 mb-1">مقدار تغییر</label>
+                        <input type="number" name="change_amount" id="change_amount" placeholder="+5 یا -3" class="w-full bg-gray-50 rounded-lg px-3 py-2.5 text-sm border border-gray-200 focus:ring-2 focus:ring-brand-red/30 focus:bg-white focus:border-brand-red/50 transition-all font-num">
+                        @error('change_amount')
+                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label for="reason" class="block text-sm font-medium text-gray-700 mb-1">دلیل</label>
+                        <select name="reason" id="reason" class="w-full bg-gray-50 rounded-lg px-3 py-2.5 text-sm border border-gray-200 focus:ring-2 focus:ring-brand-red/30 focus:bg-white focus:border-brand-red/50 transition-all">
+                            <option value="purchase">خرید</option>
+                            <option value="sale">فروش</option>
+                            <option value="adjustment">تنظیم دستی</option>
+                            <option value="damage">ضایعات</option>
+                            <option value="return">برگشت</option>
+                            <option value="correction">تصحیح</option>
+                        </select>
+                        @error('reason')
+                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+                <div>
+                    <label for="note" class="block text-sm font-medium text-gray-700 mb-1">یادداشت (اختیاری)</label>
+                    <textarea name="note" id="note" rows="3" class="w-full bg-gray-50 rounded-lg px-3 py-2.5 text-sm border border-gray-200 focus:ring-2 focus:ring-brand-red/30 focus:bg-white focus:border-brand-red/50 transition-all"></textarea>
+                </div>
+                <button type="submit" class="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-red text-white rounded-lg text-sm font-medium hover:bg-brand-red-dark transition-colors">
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                    <span>اعمال تغییر</span>
+                </button>
+            </form>
+        </div>
+
+        {{-- Inventory Logs --}}
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100/80 p-6">
+            <div class="flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center shrink-0">
+                    <i data-lucide="history" class="w-5 h-5 text-purple-600"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-brand-charcoal">تاریخچه تغییرات</h3>
+                    <p class="text-xs text-gray-500">آخرین تغییرات موجودی</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 max-h-[420px] overflow-y-auto no-scrollbar">
+                @if($inventoryLogs->isEmpty())
+                    <div class="text-center py-8 text-gray-400">
+                        <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-3 text-gray-300"></i>
+                        <p class="text-sm">هیچ تغییری ثبت نشده است.</p>
+                    </div>
+                @else
+                    @foreach($inventoryLogs->take(15) as $log)
+                        <div class="flex items-start gap-3 p-3 rounded-xl bg-gray-50 border border-gray-100">
+                            <div class="w-8 h-8 rounded-lg {{ $log->change_amount > 0 ? 'bg-green-100' : 'bg-red-100' }} flex items-center justify-center shrink-0">
+                                <i data-lucide="{{ $log->change_amount > 0 ? 'plus' : 'minus' }}" class="w-4 h-4 {{ $log->change_amount > 0 ? 'text-green-600' : 'text-red-600' }}"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-brand-charcoal truncate">{{ $log->product?->name ?? '—' }}</p>
+                                <div class="flex items-center gap-2 mt-0.5">
+                                    <span class="text-xs font-num font-bold {{ $log->change_amount > 0 ? 'text-green-600' : 'text-red-600' }}">
+                                        {{ $log->change_amount > 0 ? '+' : '' }}{{ \App\Support\Format::digits($log->change_amount) }}
+                                    </span>
+                                    <span class="text-xs text-gray-400">{{ $log->reason }}</span>
+                                </div>
+                                @if($log->note)
+                                    <p class="text-xs text-gray-400 mt-1">{{ $log->note }}</p>
+                                @endif
+                            </div>
+                            <span class="text-xs text-gray-400 shrink-0 font-num">{{ $log->created_at->format('Y/m/d') }}</span>
+                        </div>
+                    @endforeach
+                @endif
+            </div>
+        </div>
+
+        {{-- Low Stock Alert --}}
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100/80 p-6">
+            <div class="flex items-center gap-3 mb-5">
+                <div class="w-10 h-10 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
+                    <i data-lucide="alert-triangle" class="w-5 h-5 text-brand-orange"></i>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-brand-charcoal">هشدار موجودی کم</h3>
+                    <p class="text-xs text-gray-500">محصولات با موجودی کمتر از ۵ عدد</p>
+                </div>
+            </div>
+
+            @if($lowStockProducts->isEmpty())
+                <div class="text-center py-8">
+                    <div class="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-3">
+                        <i data-lucide="check-circle" class="w-6 h-6 text-green-500"></i>
+                    </div>
+                    <p class="text-sm text-gray-500">همه محصولات موجودی کافی دارند.</p>
+                </div>
+            @else
+                <div class="space-y-3 max-h-[420px] overflow-y-auto no-scrollbar">
+                    @foreach($lowStockProducts as $product)
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-orange-50/50 border border-orange-100">
+                            <div class="w-10 h-10 rounded-lg bg-brand-charcoal flex items-center justify-center shrink-0">
+                                <i data-lucide="package" class="w-5 h-5 text-gray-300"></i>
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <p class="text-sm font-medium text-brand-charcoal truncate">{{ $product->name }}</p>
+                                <p class="text-xs text-gray-500">{{ $product->category?->name ?? '—' }}</p>
+                            </div>
+                            <div class="text-left shrink-0">
+                                <p class="text-xs text-gray-400">موجودی</p>
+                                <p class="text-sm font-bold font-num text-brand-red">{{ \App\Support\Format::digits($product->stock) }} عدد</p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+    </div>
+
+</div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (window.anime) {
+            anime({
+                targets: '.space-y-6 > *',
+                opacity: [0, 1],
+                translateY: [12, 0],
+                duration: 400,
+                delay: anime.stagger(60),
+                easing: 'easeOutCubic',
+            });
+        }
+        window.renderIcons();
+    });
+</script>
+@endpush
+@endsection
