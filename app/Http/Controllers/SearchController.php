@@ -14,28 +14,38 @@ class SearchController extends Controller
         $query = $request->get('q', '');
         $category = $request->get('category', '');
         $brand = $request->get('brand', '');
+        $minPrice = $request->get('min_price', '');
+        $maxPrice = $request->get('max_price', '');
 
-        $products = Product::where('is_active', 1);
+        $productsQuery = Product::where('is_active', 1);
 
         if ($query) {
-            $products->where(function ($q) use ($query) {
+            $productsQuery->where(function ($q) use ($query) {
                 $q->where('name', 'like', "%{$query}%")
                   ->orWhere('description', 'like', "%{$query}%");
             });
         }
 
         if ($category) {
-            $products->where('category_id', $category);
+            $productsQuery->where('category_id', $category);
         }
 
         if ($brand) {
-            $products->where('brand_id', $brand);
+            $productsQuery->where('brand_id', $brand);
         }
 
-        $products = $products->with(['category', 'brand'])->get();
-        $categories = Category::all();
+        if ($minPrice !== '' && is_numeric($minPrice)) {
+            $productsQuery->where('price', '>=', (int) $minPrice);
+        }
+
+        if ($maxPrice !== '' && is_numeric($maxPrice)) {
+            $productsQuery->where('price', '<=', (int) $maxPrice);
+        }
+
+        $products = $productsQuery->with(['category', 'brand'])->paginate(12)->withQueryString();
+        $categories = Category::where('is_active', true)->get();
         $brands = Brand::all();
 
-        return view('search.index', compact('products', 'query', 'category', 'brand', 'categories', 'brands'));
+        return view('search.index', compact('products', 'query', 'category', 'brand', 'minPrice', 'maxPrice', 'categories', 'brands'));
     }
 }
