@@ -4,229 +4,217 @@
 
 @extends('layouts.app')
 
+@section('title', 'سبد خرید')
+
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <div class="mb-8 text-right">
-        <h1 class="text-3xl font-extrabold text-brand-charcoal">سبد خرید</h1>
-        <p class="text-gray-500 mt-2">محصولات انتخابی خود را مرور کنید</p>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    {{-- Breadcrumb --}}
+    <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6">
+        <a href="{{ route('home') }}" class="hover:text-brand-red transition">خانه</a>
+        <i data-lucide="chevron-left" class="w-4 h-4"></i>
+        <span class="text-brand-charcoal font-medium">سبد خرید</span>
+    </nav>
+
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-brand-charcoal">سبد خرید</h1>
+            <p class="text-gray-500 mt-1 text-sm">
+                @if(count($cartItems) > 0)
+                    {{ \App\Support\Format::digits($totalQuantity) }} کالا در سبد شما
+                @else
+                    محصولات انتخابی خود را مرور کنید
+                @endif
+            </p>
+        </div>
+        @if(count($cartItems) > 0)
+            <form action="{{ route('cart.clear') }}" method="POST" class="hidden sm:block">
+                @csrf
+                <button type="submit" onclick="return confirm('آیا از پاک کردن سبد خرید اطمینان دارید؟')"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition border border-red-200">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    پاک کردن سبد
+                </button>
+            </form>
+        @endif
     </div>
 
     @if(count($cartItems) === 0)
-        <div class="bg-white rounded-2xl shadow-sm p-12 text-center" id="cart-empty-state">
-            <div class="w-20 h-20 rounded-full bg-brand-offwhite flex items-center justify-center mx-auto">
+        {{-- Empty State --}}
+        <div class="bg-white rounded-xl border border-gray-200 py-16 text-center" id="cart-empty-state">
+            <div class="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
                 <i data-lucide="shopping-cart" class="w-10 h-10 text-gray-300"></i>
             </div>
-            <h2 class="text-2xl font-bold text-brand-charcoal mt-5">سبد خرید شما خالی است</h2>
-            <p class="text-gray-500 mt-2">برای شروع خرید، به صفحه محصولات بروید.</p>
-            <a href="{{ route('products.index') }}" class="inline-flex items-center gap-2 mt-6 px-6 py-3 bg-brand-red hover:bg-brand-red-dark text-white rounded-lg font-bold transition">
-                <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                بازگشت به محصولات
+            <h2 class="text-xl font-bold text-brand-charcoal mb-2">سبد خرید شما خالی است</h2>
+            <p class="text-gray-500 mb-6 max-w-sm mx-auto">محصولات مورد علاقه خود را به سبد اضافه کنید و خرید خود را تکمیل نمایید.</p>
+            <a href="{{ route('products.index') }}" class="inline-flex items-center gap-2 bg-brand-red text-white hover:bg-red-700 px-6 py-3 rounded-lg transition">
+                <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                مشاهده محصولات
             </a>
         </div>
     @else
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8" id="cart-content">
-            <div class="lg:col-span-2 space-y-4">
+        @php
+            $hasStockIssue = collect($cartItems)->contains(fn($item) => $item->exceeds_stock || $item->out_of_stock);
+        @endphp
+
+        @if($hasStockIssue)
+            <div class="mb-6 flex items-center gap-3 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-amber-800">
+                <i data-lucide="alert-triangle" class="w-5 h-5 shrink-0"></i>
+                <span class="text-sm">برخی از محصولات سبد شما با مشکل موجودی مواجه شده‌اند. لطفاً قبل از ادامه، تعداد را اصلاح کنید.</span>
+            </div>
+        @endif
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6" id="cart-content">
+            <div class="lg:col-span-2 space-y-3">
                 @foreach($cartItems as $item)
-                    <div
-                        data-item-id="{{ $item->id }}"
-                        class="bg-white rounded-2xl shadow-sm p-4 sm:p-5"
-                        x-data="{
-                            quantity: {{ $item->quantity }},
-                            price: {{ $item->price }},
-                            id: {{ $item->id }},
-                            loading: false,
-                            updateQuantity(newQty, oldQty) {
-                                if (newQty < 1 || newQty > 99) return;
-                                this.loading = true;
-                                fetch('{{ url('cart/update') }}/' + this.id, {
-                                    method: 'POST',
-                                    headers: {
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                        'X-Requested-With': 'XMLHttpRequest',
-                                        'Content-Type': 'application/x-www-form-urlencoded'
-                                    },
-                                    body: 'quantity=' + newQty
-                                })
-                                .then(res => {
-                                    if (!res.ok) throw new Error('failed');
-                                    this.quantity = newQty;
-                                    this.loading = false;
-                                    updateCartTotal();
-                                })
-                                .catch(() => {
-                                    this.quantity = oldQty;
-                                    this.loading = false;
-                                    alert('خطا در به‌روزرسانی سبد خرید. لطفاً دوباره امتحان کنید.');
-                                });
-                            }
-                        }"
-                    >
+                    <div class="bg-white rounded-xl border border-gray-200 p-4 sm:p-5 {{ $item->out_of_stock || $item->exceeds_stock ? 'border-red-300 bg-red-50/30' : '' }}">
                         <div class="flex items-center gap-4">
-                            <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-brand-offwhite flex items-center justify-center shrink-0">
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
                                 @if($item->image)
-                                    <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->name }}" class="w-full h-full object-cover rounded-xl">
+                                    <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->name }}" class="w-full h-full object-cover rounded-lg">
                                 @else
-                                    <i data-lucide="{{ $item->category_icon }}" class="w-8 h-8 sm:w-10 sm:h-10 text-brand-charcoal/30"></i>
+                                    <i data-lucide="{{ $item->category_icon }}" class="w-8 h-8 text-gray-300"></i>
                                 @endif
                             </div>
 
-                            <div class="flex-1 min-w-0 text-right">
-                                <a href="{{ route('products.show', $item->slug) }}" class="font-bold text-brand-charcoal hover:text-brand-red transition line-clamp-2">
+                            <div class="flex-1 min-w-0">
+                                <a href="{{ route('products.show', $item->slug) }}" class="font-medium text-brand-charcoal hover:text-brand-red transition text-sm line-clamp-2">
                                     {{ $item->name }}
                                 </a>
-                                <div class="mt-2 font-num text-brand-red font-bold">
-                                    {{ number_format($item->price) }}
-                                    <span class="text-xs font-normal text-gray-500">تومان</span>
+                                <div class="mt-1 font-num text-brand-red font-bold text-sm">
+                                    {{ \App\Support\Format::price($item->price) }} <span class="text-xs font-normal text-gray-400">تومان</span>
                                 </div>
 
-                                <form action="{{ route('cart.remove', $item->id) }}" method="POST" class="mt-2 sm:hidden">
-                                    @csrf
-                                    <button type="submit" class="inline-flex items-center gap-1 text-xs text-brand-red hover:text-brand-red-dark transition">
-                                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                                        حذف
-                                    </button>
-                                </form>
+                                @if($item->out_of_stock)
+                                    <span class="inline-flex items-center gap-1 text-xs text-red-600 mt-1">
+                                        <i data-lucide="x-circle" class="w-3 h-3"></i> ناموجود
+                                    </span>
+                                @elseif($item->exceeds_stock)
+                                    <span class="inline-flex items-center gap-1 text-xs text-amber-600 mt-1">
+                                        <i data-lucide="alert-triangle" class="w-3 h-3"></i> بیشتر از موجودی ({{ \App\Support\Format::digits($item->stock) }} عدد موجود)
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1 text-xs text-green-600 mt-1">
+                                        <i data-lucide="check-circle" class="w-3 h-3"></i> {{ \App\Support\Format::digits($item->stock) }} عدد موجود
+                                    </span>
+                                @endif
                             </div>
 
-                            <div class="hidden sm:flex items-center gap-5">
-                                <div class="flex items-center gap-2">
-                                    <button
-                                        type="button"
-                                        @click="updateQuantity(quantity - 1, quantity)"
-                                        :disabled="quantity <= 1 || loading"
-                                        class="p-1 rounded-lg border border-gray-300 bg-gray-50 hover:bg-gray-100 text-brand-red hover:text-brand-red-dark disabled:opacity-40"
-                                    >
+                            <div class="hidden sm:flex items-center gap-4">
+                                {{-- Quantity controls (form-based for stock validation) --}}
+                                <form action="{{ route('cart.update', $item->id) }}" method="POST" class="flex items-center gap-2">
+                                    @csrf
+                                    <button type="submit" name="quantity" value="{{ $item->quantity - 1 }}"
+                                            {{ $item->quantity <= 1 ? 'disabled' : '' }}
+                                            class="w-8 h-8 rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-brand-charcoal disabled:opacity-30 transition">
                                         <i data-lucide="minus" class="w-4 h-4"></i>
                                     </button>
-                                    <span class="w-8 text-center font-num" x-text="quantity"></span>
-                                    <button
-                                        type="button"
-                                        @click="updateQuantity(quantity + 1, quantity)"
-                                        :disabled="loading"
-                                        class="p-1 rounded-lg border border-gray-300 bg-gray-50 hover:bg-gray-100 text-brand-red hover:text-brand-red-dark disabled:opacity-40"
-                                    >
+                                    <span class="w-8 text-center font-num text-sm font-medium">{{ \App\Support\Format::digits($item->quantity) }}</span>
+                                    <button type="submit" name="quantity" value="{{ $item->quantity + 1 }}"
+                                            {{ $item->quantity >= $item->stock ? 'disabled' : '' }}
+                                            class="w-8 h-8 rounded-lg border border-gray-200 bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-brand-charcoal disabled:opacity-30 transition">
                                         <i data-lucide="plus" class="w-4 h-4"></i>
                                     </button>
-                                </div>
+                                </form>
 
-                                <div class="text-center min-w-[90px] item-subtotal">
-                                    <span class="font-bold text-brand-charcoal font-num" x-text="new Intl.NumberFormat('fa-IR').format(quantity * price)"></span>
+                                <div class="text-center min-w-[80px]">
+                                    <span class="font-bold text-brand-charcoal font-num text-sm">{{ \App\Support\Format::price($item->line_total) }}</span>
                                     <span class="text-xs text-gray-400">تومان</span>
                                 </div>
 
                                 <form action="{{ route('cart.remove', $item->id) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="p-2 rounded-lg text-gray-400 hover:text-brand-red hover:bg-red-50 transition" aria-label="حذف">
+                                    <button type="submit" class="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition" aria-label="حذف">
                                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                                     </button>
                                 </form>
                             </div>
                         </div>
 
-                        <div class="sm:hidden flex items-center justify-between gap-3 mt-3 pt-3 border-t border-gray-100">
-                            <div class="flex items-center gap-2">
-                                <button
-                                    type="button"
-                                    @click="updateQuantity(quantity - 1, quantity)"
-                                    :disabled="quantity <= 1 || loading"
-                                    class="p-1 rounded-lg border border-gray-300 bg-gray-50 hover:bg-gray-100 text-brand-red hover:text-brand-red-dark disabled:opacity-40"
-                                >
+                        {{-- Mobile quantity controls --}}
+                        <div class="sm:hidden flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+                            <form action="{{ route('cart.update', $item->id) }}" method="POST" class="flex items-center gap-2">
+                                @csrf
+                                <button type="submit" name="quantity" value="{{ $item->quantity - 1 }}"
+                                        {{ $item->quantity <= 1 ? 'disabled' : '' }}
+                                        class="w-7 h-7 rounded border border-gray-200 bg-gray-50 flex items-center justify-center disabled:opacity-30">
                                     <i data-lucide="minus" class="w-3 h-3"></i>
                                 </button>
-                                <span class="w-6 text-center font-num" x-text="quantity"></span>
-                                <button
-                                    type="button"
-                                    @click="updateQuantity(quantity + 1, quantity)"
-                                    :disabled="loading"
-                                    class="p-1 rounded-lg border border-gray-300 bg-gray-50 hover:bg-gray-100 text-brand-red hover:text-brand-red-dark disabled:opacity-40"
-                                >
+                                <span class="w-6 text-center font-num text-sm">{{ \App\Support\Format::digits($item->quantity) }}</span>
+                                <button type="submit" name="quantity" value="{{ $item->quantity + 1 }}"
+                                        {{ $item->quantity >= $item->stock ? 'disabled' : '' }}
+                                        class="w-7 h-7 rounded border border-gray-200 bg-gray-50 flex items-center justify-center disabled:opacity-30">
                                     <i data-lucide="plus" class="w-3 h-3"></i>
                                 </button>
-                            </div>
-                            <div class="text-right">
-                                <div class="text-xs text-gray-400">جمع</div>
-                                <div class="font-bold text-brand-charcoal font-num" x-text="new Intl.NumberFormat('fa-IR').format(quantity * price) + ' تومان'"></div>
+                            </form>
+                            <div class="text-left">
+                                <span class="font-bold text-brand-charcoal font-num text-sm">{{ \App\Support\Format::price($item->line_total) }} تومان</span>
                             </div>
                         </div>
                     </div>
                 @endforeach
 
-                <div class="text-right">
-                    <form action="{{ route('cart.clear') }}" method="POST" class="inline-block">
-                        @csrf
-                        <button type="submit" onclick="return confirm('آیا از پاک کردن سبد خرید اطمینان دارید؟')"
-                            class="inline-flex items-center gap-2 px-4 py-2 text-sm text-brand-red hover:bg-red-50 rounded-lg transition">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            پاک کردن سبد خرید
-                        </button>
-                    </form>
-                </div>
+                {{-- Mobile clear cart --}}
+                <form action="{{ route('cart.clear') }}" method="POST" class="sm:hidden">
+                    @csrf
+                    <button type="submit" onclick="return confirm('آیا از پاک کردن سبد خرید اطمینان دارید؟')"
+                        class="w-full text-center py-3 text-sm text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition">
+                        پاک کردن سبد خرید
+                    </button>
+                </form>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-sm p-6 h-fit">
-                <h2 class="text-xl font-bold text-brand-charcoal mb-6">خلاصه سفارش</h2>
-                <div class="space-y-4">
-                    <div class="flex justify-between text-gray-600">
-                        <span>تعداد کالا:</span>
-                        <span class="font-num font-bold text-brand-charcoal" id="cart-total-quantity">{{ $totalQuantity }}</span>
+            {{-- Order Summary --}}
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl border border-gray-200 p-6 sticky top-24">
+                    <h2 class="font-bold text-brand-charcoal mb-4 text-lg">خلاصه سفارش</h2>
+
+                    <div class="space-y-3 mb-6">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">تعداد کالاها</span>
+                            <span class="font-num font-medium text-brand-charcoal">{{ \App\Support\Format::digits($totalQuantity) }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-500">تعداد اقلام</span>
+                            <span class="font-num font-medium text-brand-charcoal">{{ \App\Support\Format::digits(count($cartItems)) }}</span>
+                        </div>
+                        <div class="border-t border-gray-100 pt-3 flex justify-between">
+                            <span class="font-medium text-brand-charcoal">مجموع</span>
+                            <span class="font-bold text-brand-charcoal font-num">{{ \App\Support\Format::price($total) }} تومان</span>
+                        </div>
                     </div>
-                    <div class="flex justify-between text-gray-600">
-                        <span>جمع کل:</span>
-                        <span class="font-num font-bold text-brand-charcoal" id="cart-total-amount">{{ number_format($total) }} <span class="text-xs font-normal text-gray-400">تومان</span></span>
-                    </div>
-                    <div class="flex justify-between text-gray-600">
-                        <span>هزینه ارسال:</span>
-                        <span class="text-green-600 font-semibold">رایگان</span>
-                    </div>
-                    <div class="border-t border-gray-100 pt-4 space-y-3">
-                        <a href="{{ route('checkout.index') }}" class="w-full inline-flex items-center justify-center gap-2 bg-brand-red hover:bg-brand-red-dark text-white py-3 rounded-lg font-bold transition">
+
+                    @if($total >= 500000)
+                        <div class="flex items-center gap-2 rounded-lg bg-green-50 border border-green-200 px-3 py-2 text-green-700 text-xs mb-4">
+                            <i data-lucide="truck" class="w-4 h-4 shrink-0"></i>
+                            <span>شامل ارسال رایگان</span>
+                        </div>
+                    @else
+                        <div class="flex items-center gap-2 rounded-lg bg-blue-50 border border-blue-200 px-3 py-2 text-blue-700 text-xs mb-4">
+                            <i data-lucide="info" class="w-4 h-4 shrink-0"></i>
+                            <span>{{ \App\Support\Format::price(500000 - $total) }} تومان تا ارسال رایگان</span>
+                        </div>
+                    @endif
+
+                    @php
+                        $canCheckout = !collect($cartItems)->contains(fn($item) => $item->out_of_stock || $item->exceeds_stock);
+                    @endphp
+
+                    <a href="{{ route('checkout.index') }}"
+                       class="block w-full text-center py-3 rounded-lg font-medium transition {{ $canCheckout ? 'bg-brand-red text-white hover:bg-red-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed' }}"
+                       @if(!$canCheckout) onclick="event.preventDefault(); alert('لطفاً مشکلات موجودی را برطرف کنید.');" @endif>
+                        <span class="flex items-center justify-center gap-2">
                             <i data-lucide="credit-card" class="w-5 h-5"></i>
-                            تکمیل سفارش
-                        </a>
-                        <a href="{{ route('products.index') }}"
-                            class="block text-center w-full inline-flex items-center justify-center gap-2 border border-gray-200 text-brand-charcoal hover:bg-brand-offwhite py-3 rounded-lg font-bold transition">
-                            <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                            ادامه خرید
-                        </a>
-                    </div>
+                            تکمیل خرید
+                        </span>
+                    </a>
+
+                    <a href="{{ route('products.index') }}" class="block w-full text-center mt-3 text-sm text-gray-500 hover:text-brand-red transition">
+                        ادامه خرید
+                    </a>
                 </div>
             </div>
         </div>
     @endif
 </div>
-
-@push('scripts')
-    <script>
-        function updateCartTotal() {
-            let total = 0;
-            let qty = 0;
-            document.querySelectorAll('[data-item-id]').forEach(function (el) {
-                const alpineData = Alpine.$data(el);
-                if (alpineData) {
-                    total += alpineData.quantity * alpineData.price;
-                    qty += alpineData.quantity;
-                }
-            });
-            const totalEl = document.querySelector('#cart-total-amount');
-            const qtyEl = document.querySelector('#cart-total-quantity');
-            if (totalEl) totalEl.innerHTML = new Intl.NumberFormat('fa-IR').format(Math.round(total)) + ' <span class="text-xs font-normal text-gray-400">تومان</span>';
-            if (qtyEl) qtyEl.textContent = qty;
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            if (window.renderIcons) window.renderIcons();
-            if (typeof anime === 'undefined') return;
-            var el = document.getElementById('cart-empty-state') || document.getElementById('cart-content');
-            if (el) {
-                anime({
-                    targets: el,
-                    translateY: [20, 0],
-                    opacity: [0, 1],
-                    duration: 650,
-                    easing: 'easeOutCubic'
-                });
-            }
-        });
-    </script>
-@endpush
 @endsection
