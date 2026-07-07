@@ -24,19 +24,36 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="antialiased bg-brand-offwhite text-brand-charcoal">
+<body class="antialiased bg-brand-offwhite text-brand-charcoal" x-data="{ sidebarOpen: false }">
 <div class="min-h-screen flex">
 
+    {{-- Mobile sidebar backdrop --}}
+    <div x-show="sidebarOpen" x-cloak @click="sidebarOpen = false"
+         x-transition:enter="transition-opacity duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition-opacity duration-300"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0"
+         class="fixed inset-0 bg-black/50 z-30 lg:hidden"></div>
+
     {{-- Sidebar (RTL: on the right) --}}
-    <aside class="fixed top-0 right-0 z-40 h-screen w-64 bg-brand-charcoal text-gray-300 flex flex-col transition-transform duration-300 lg:translate-x-0 -translate-x-full lg:static lg:h-auto" id="admin-sidebar">
-        <div class="flex items-center gap-3 px-6 h-16 border-b border-white/10 shrink-0">
-            <div class="w-9 h-9 rounded-lg bg-brand-red flex items-center justify-center shrink-0">
-                <i data-lucide="anchor" class="w-5 h-5 text-white"></i>
-            </div>
-            <div class="leading-tight">
-                <div class="text-white font-bold text-base">لنگر<span class="text-brand-red">موتور</span></div>
-                <div class="text-[11px] text-gray-400">پنل مدیریت فروشگاه</div>
-            </div>
+    <aside class="fixed top-0 right-0 z-40 h-screen w-64 bg-brand-charcoal text-gray-300 flex flex-col transition-transform duration-300 lg:translate-x-0 lg:static lg:h-auto"
+           :class="sidebarOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'">
+        <div class="flex items-center justify-between px-6 h-16 border-b border-white/10 shrink-0">
+            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-brand-red flex items-center justify-center shrink-0">
+                    <i data-lucide="anchor" class="w-5 h-5 text-white"></i>
+                </div>
+                <div class="leading-tight">
+                    <div class="text-white font-bold text-base">لنگر<span class="text-brand-red">موتور</span></div>
+                    <div class="text-[11px] text-gray-400">پنل مدیریت</div>
+                </div>
+            </a>
+            {{-- Close button for mobile --}}
+            <button @click="sidebarOpen = false" class="lg:hidden p-1 rounded hover:bg-white/10">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
         </div>
 
         <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-1 no-scrollbar">
@@ -93,40 +110,60 @@
         </div>
     </aside>
 
-    {{-- Mobile sidebar backdrop --}}
-    <div x-data="{ open: false }" @keydown.escape.window="open = false" class="lg:hidden">
-        <div x-show="open" x-cloak @click="open = false" class="fixed inset-0 bg-black/50 z-30"></div>
-        <button @click="document.getElementById('admin-sidebar').classList.toggle('-translate-x-full')" class="fixed top-4 right-4 z-50 lg:hidden p-2 rounded-lg bg-brand-charcoal text-white">
-            <i data-lucide="menu" class="w-5 h-5"></i>
-        </button>
-    </div>
-
     {{-- Main column --}}
     <div class="flex-1 flex flex-col min-w-0">
 
         {{-- Top header --}}
         <header class="sticky top-0 z-20 bg-white border-b border-gray-200 h-16 flex items-center px-4 sm:px-6 gap-4">
+            <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                <i data-lucide="menu" class="w-5 h-5 text-gray-600"></i>
+            </button>
+
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-full bg-brand-charcoal flex items-center justify-center text-white text-sm font-bold shrink-0">م</div>
-                <div class="leading-tight hidden sm:block">
-                    <div class="text-sm font-semibold text-brand-charcoal">مدیر سیستم</div>
-                    <div class="text-[11px] text-gray-500">مدیر کل</div>
+                <div class="w-9 h-9 rounded-full bg-brand-charcoal flex items-center justify-center text-white text-sm font-bold shrink-0">
+                    {{ mb_substr(auth()->user()->name, 0, 1) }}
                 </div>
-                <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 hidden sm:block"></i>
+                <div class="leading-tight hidden sm:block">
+                    <div class="text-sm font-semibold text-brand-charcoal">{{ auth()->user()->name }}</div>
+                    <div class="text-[11px] text-gray-500">{{ auth()->user()->is_admin ? 'مدیر کل' : 'کاربر' }}</div>
+                </div>
             </div>
 
-            <div class="flex-1 max-w-md mx-auto">
+            <div class="flex-1 max-w-md mx-auto hidden sm:block">
                 <div class="relative">
                     <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2"></i>
                     <input type="text" placeholder="جستجو در محصولات، سفارش‌ها، مشتریان..." class="w-full bg-gray-100 rounded-lg pr-9 pl-4 py-2 text-sm border-0 focus:ring-2 focus:ring-brand-red/30 focus:bg-white transition-all">
                 </div>
             </div>
 
+            <a href="{{ route('home') }}" target="_blank" class="p-2 rounded-lg hover:bg-gray-100 transition-colors hidden sm:flex items-center gap-1 text-sm text-gray-600" title="مشاهده سایت">
+                <i data-lucide="external-link" class="w-4 h-4"></i>
+            </a>
+
             <button class="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
                 <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i>
                 <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-brand-red rounded-full"></span>
             </button>
         </header>
+
+        {{-- Flash messages --}}
+        @if (session('success'))
+            <div class="px-4 sm:px-6 pt-4">
+                <div class="flex items-center gap-2 rounded-lg border border-green-300 bg-green-50 px-4 py-3 text-green-800">
+                    <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0"></i>
+                    <span>{{ session('success') }}</span>
+                </div>
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="px-4 sm:px-6 pt-4">
+                <div class="flex items-center gap-2 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-red-800">
+                    <i data-lucide="alert-circle" class="w-5 h-5 shrink-0"></i>
+                    <span>{{ session('error') }}</span>
+                </div>
+            </div>
+        @endif
 
         {{-- Page content --}}
         <main class="flex-1 p-4 sm:p-6 lg:p-8">

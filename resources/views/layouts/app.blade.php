@@ -1,49 +1,37 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl" class="bg-brand-offwhite">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
-        <meta name="theme-color" content="#1A1A1A">
-        <meta name="description" content="لنگر موتور؛ فروشگاه تخصصی قطعات یدکی موتورسیکلت هوندا، یاماها، سوزوکی و کاوازاکی با ضمانت اصالت کالا و ارسال سریع به سراسر ایران.">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="description" content="لنگر موتور - فروشگاه تخصصی قطعات یدکی موتورسیکلت هوندا، یاماها، سوزوکی و کاوازاکی. اصالت کالا تضمین شده.">
+    <meta name="theme-color" content="#1A1A1A">
 
-        <title>{{ config('app.name', 'لنگر موتور') }} | قطعات یدکی موتورسیکلت</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-        <!-- Fonts: Vazirmatn for Persian text, Inter for numbers -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 
-        <!-- Styles / Scripts -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <title>@yield('title', 'صفحه اصلی') | لنگر موتور</title>
 
-        <!-- Icons & micro-animations -->
-        <script src="https://unpkg.com/lucide@latest"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <style>
+        body { font-family: 'Vazirmatn', sans-serif; }
+        .font-num { font-family: 'Inter', 'Vazirmatn', sans-serif; }
+        [x-cloak] { display: none !important; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="antialiased bg-brand-offwhite text-brand-charcoal min-h-screen flex flex-col">
 
-        <style>
-            body { font-family: 'Vazirmatn', sans-serif; }
-            .font-num { font-family: 'Inter', 'Vazirmatn', sans-serif; }
-            [x-cloak] { display: none !important; }
-            /* Hide scrollbar for horizontal category strip */
-            .no-scrollbar::-webkit-scrollbar { display: none; }
-            .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        </style>
-    </head>
-    <body class="antialiased bg-brand-offwhite text-brand-charcoal">
-        <div class="min-h-screen flex flex-col">
-            @include('layouts.navigation')
+    @include('layouts.navigation')
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-white shadow">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
-                    </div>
-                </header>
-            @endisset
-
-            <!-- Flash message -->
+    <main class="flex-1">
+        <div class="max-w-7xl mx-auto w-full">
+            <!-- Flash messages -->
             @if (session('success'))
                 <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-4">
                     <div class="flex items-center gap-2 rounded-lg border border-green-300 bg-green-50 px-4 py-3 text-green-800">
@@ -53,24 +41,52 @@
                 </div>
             @endif
 
-            <!-- Page Content -->
-            <main class="flex-1">
-                @yield('content')
-            </main>
+            @if (session('error'))
+                <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-4">
+                    <div class="flex items-center gap-2 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-red-800">
+                        <i data-lucide="alert-circle" class="w-5 h-5 shrink-0"></i>
+                        <span>{{ session('error') }}</span>
+                    </div>
+                </div>
+            @endif
 
-            @include('layouts.footer')
+            @if (session('warning'))
+                <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-4">
+                    <div class="flex items-center gap-2 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-amber-800">
+                        <i data-lucide="alert-triangle" class="w-5 h-5 shrink-0"></i>
+                        <span>{{ session('warning') }}</span>
+                    </div>
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-4">
+                    <div class="rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-red-800">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i data-lucide="alert-circle" class="w-5 h-5 shrink-0"></i>
+                            <span class="font-medium">لطفاً خطاهای زیر را برطرف کنید:</span>
+                        </div>
+                        <ul class="mr-6 list-disc text-sm space-y-1">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endif
         </div>
 
-        <!-- Render Lucide icons -->
-        <script>
-            window.renderIcons = function () {
-                if (window.lucide) {
-                    window.lucide.createIcons();
-                }
-            };
-            document.addEventListener('DOMContentLoaded', window.renderIcons);
-        </script>
+        @yield('content')
+    </main>
 
-        @stack('scripts')
-    </body>
+    @include('layouts.footer')
+
+    <script>
+        window.renderIcons = function () {
+            if (window.lucide) { window.lucide.createIcons(); }
+        };
+        document.addEventListener('DOMContentLoaded', window.renderIcons);
+    </script>
+    @stack('scripts')
+</body>
 </html>
