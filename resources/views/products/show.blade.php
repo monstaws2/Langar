@@ -1,76 +1,118 @@
 @extends('layouts.app')
 
+@section('title', $product->name)
+
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
     <!-- Breadcrumb -->
-    <nav class="text-sm text-gray-500 mb-6 text-right flex flex-wrap items-center justify-end gap-1">
+    <nav class="flex items-center gap-2 text-sm text-gray-500 mb-6 flex-wrap">
         <a href="{{ route('home') }}" class="hover:text-brand-red transition">خانه</a>
         <i data-lucide="chevron-left" class="w-4 h-4"></i>
         <a href="{{ route('products.index') }}" class="hover:text-brand-red transition">محصولات</a>
         @if($product->category)
             <i data-lucide="chevron-left" class="w-4 h-4"></i>
-            <a href="{{ route('categories.show', $product->category->slug) }}" class="hover:text-brand-red transition">{{ $product->category->name }}</a>
+            <a href="{{ route('products.index', ['category' => $product->category->id]) }}" class="hover:text-brand-red transition">{{ $product->category->name }}</a>
         @endif
         <i data-lucide="chevron-left" class="w-4 h-4"></i>
-        <span class="text-brand-charcoal">{{ $product->name }}</span>
+        <span class="text-brand-charcoal font-medium truncate max-w-[200px]">{{ $product->name }}</span>
     </nav>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="product-show-grid">
         <!-- Image -->
         <div class="md:col-span-1" data-product-panel>
-            <div class="bg-white rounded-2xl shadow-sm h-96 flex items-center justify-center">
-                <i data-lucide="{{ $product->category->icon ?? 'package' }}" class="w-28 h-28 text-brand-charcoal/25"></i>
+            <div class="bg-white rounded-2xl border border-gray-200 h-80 sm:h-96 flex items-center justify-center relative overflow-hidden">
+                @if($product->image)
+                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                @else
+                    <div class="flex flex-col items-center text-gray-300">
+                        <i data-lucide="{{ $product->category->icon ?? 'package' }}" class="w-24 h-24 sm:w-28 sm:h-28"></i>
+                        <span class="text-xs mt-2">{{ $product->category->name ?? 'محصول' }}</span>
+                    </div>
+                @endif
+
+                @if($product->stock > 0 && $product->stock <= 5)
+                    <span class="absolute top-3 right-3 px-2.5 py-1 bg-amber-500 text-white text-xs font-bold rounded-lg">تنها {{ \App\Support\Format::digits($product->stock) }} عدد باقی‌مانده</span>
+                @elseif($product->stock < 1)
+                    <span class="absolute top-3 right-3 px-2.5 py-1 bg-gray-800/80 text-white text-xs font-bold rounded-lg">ناموجود</span>
+                @endif
             </div>
         </div>
 
         <!-- Details -->
-        <div class="md:col-span-2 text-right bg-white p-6 rounded-2xl shadow-sm" data-product-panel>
-            @if($product->brand)
-                <span class="bg-brand-orange text-xs text-white px-2.5 py-1 rounded-full">{{ $product->brand->name }}</span>
-            @endif
-            <h1 class="text-2xl font-extrabold mt-3 text-brand-charcoal">{{ $product->name }}</h1>
+        <div class="md:col-span-2 bg-white p-6 rounded-2xl border border-gray-200" data-product-panel>
+            <div class="flex items-center gap-2 mb-3">
+                @if($product->brand)
+                    <span class="bg-brand-red/10 text-brand-red text-xs px-2.5 py-1 rounded-full font-medium">{{ $product->brand->name }}</span>
+                @endif
+                @if($product->category)
+                    <span class="bg-gray-100 text-gray-600 text-xs px-2.5 py-1 rounded-full">{{ $product->category->name }}</span>
+                @endif
+            </div>
 
-            <p class="text-3xl text-brand-red font-extrabold mt-3">
-                <span class="font-num">{{ \App\Support\Format::price($product->price) }}</span>
-                <span class="text-base font-normal text-gray-500">تومان</span>
-            </p>
+            <h1 class="text-2xl font-extrabold text-brand-charcoal leading-tight">{{ $product->name }}</h1>
 
-            <div class="mt-2">
+            <div class="flex items-center gap-4 mt-4">
+                <p class="text-3xl text-brand-red font-extrabold font-num">
+                    {{ \App\Support\Format::price($product->price) }}
+                    <span class="text-base font-normal text-gray-400">تومان</span>
+                </p>
+            </div>
+
+            <div class="mt-3 flex items-center gap-4">
                 @if($product->stock > 0)
-                    <span class="inline-flex items-center gap-1 text-green-600 font-semibold text-sm">
+                    <span class="inline-flex items-center gap-1.5 text-green-600 font-medium text-sm bg-green-50 px-3 py-1.5 rounded-lg">
                         <i data-lucide="check-circle-2" class="w-4 h-4"></i>
-                        موجود در انبار
+                        موجود در انبار ({{ \App\Support\Format::digits($product->stock) }} عدد)
                     </span>
                 @else
-                    <span class="inline-flex items-center gap-1 text-brand-red font-semibold text-sm">
+                    <span class="inline-flex items-center gap-1.5 text-red-600 font-medium text-sm bg-red-50 px-3 py-1.5 rounded-lg">
                         <i data-lucide="x-circle" class="w-4 h-4"></i>
                         ناموجود
                     </span>
                 @endif
+
+                <span class="inline-flex items-center gap-1.5 text-blue-600 font-medium text-sm bg-blue-50 px-3 py-1.5 rounded-lg">
+                    <i data-lucide="shield-check" class="w-4 h-4"></i>
+                    ضمانت اصالت
+                </span>
             </div>
 
-            <hr class="my-5 border-gray-100">
+            <hr class="my-6 border-gray-100">
 
-            <div class="text-gray-700 leading-relaxed">
-                {{ $product->description ?? 'توضیحات این محصول به‌زودی تکمیل می‌شود.' }}
+            <div class="text-gray-600 leading-relaxed text-sm">
+                {{ $product->description ?: 'توضیحات این محصول به‌زودی تکمیل می‌شود.' }}
             </div>
 
-            <form action="{{ route('cart.add', $product) }}" method="POST" class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <form action="{{ route('cart.add', $product) }}" method="POST" class="mt-6 flex flex-col sm:flex-row gap-3">
                 @csrf
                 <button type="submit" @disabled($product->stock < 1)
-                    class="inline-flex items-center justify-center gap-2 py-3 bg-brand-red hover:bg-brand-red-dark text-white rounded-lg font-bold transition disabled:opacity-50 disabled:cursor-not-allowed" data-add-to-cart>
+                    class="flex-1 inline-flex items-center justify-center gap-2 py-3.5 bg-brand-red hover:bg-red-700 text-white rounded-xl font-bold transition disabled:opacity-40 disabled:cursor-not-allowed">
                     <i data-lucide="shopping-cart" class="w-5 h-5"></i>
-                    افزودن به سبد خرید
+                    @if($product->stock > 0)
+                        افزودن به سبد خرید
+                    @else
+                        در حال حاضر ناموجود
+                    @endif
                 </button>
-                <a href="{{ route('cart.index') }}" class="inline-flex items-center justify-center gap-2 py-3 border border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white rounded-lg transition">
+                <a href="{{ route('cart.index') }}" class="inline-flex items-center justify-center gap-2 py-3.5 border-2 border-gray-200 text-gray-600 hover:border-brand-red hover:text-brand-red rounded-xl transition font-medium">
+                    <i data-lucide="shopping-bag" class="w-5 h-5"></i>
                     مشاهده سبد خرید
                 </a>
             </form>
 
-            <div class="mt-6 flex flex-wrap items-center gap-4 text-sm text-gray-600">
-                <span class="inline-flex items-center gap-1"><i data-lucide="badge-check" class="w-4 h-4 text-brand-red"></i> اصالت کالا</span>
-                <span class="inline-flex items-center gap-1"><i data-lucide="truck" class="w-4 h-4 text-brand-red"></i> ارسال سریع</span>
-                <span class="inline-flex items-center gap-1"><i data-lucide="rotate-ccw" class="w-4 h-4 text-brand-red"></i> مرجوعی ۷ روزه</span>
+            <div class="mt-6 grid grid-cols-3 gap-3">
+                <div class="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl text-center">
+                    <i data-lucide="badge-check" class="w-6 h-6 text-brand-red"></i>
+                    <span class="text-xs text-gray-600 font-medium">ضمانت اصالت</span>
+                </div>
+                <div class="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl text-center">
+                    <i data-lucide="truck" class="w-6 h-6 text-brand-red"></i>
+                    <span class="text-xs text-gray-600 font-medium">ارسال سریع</span>
+                </div>
+                <div class="flex flex-col items-center gap-2 p-4 bg-gray-50 rounded-xl text-center">
+                    <i data-lucide="rotate-ccw" class="w-6 h-6 text-brand-red"></i>
+                    <span class="text-xs text-gray-600 font-medium">مرجوعی ۷ روزه</span>
+                </div>
             </div>
         </div>
     </div>
@@ -78,10 +120,16 @@
     <!-- Related products -->
     @if($related->count())
     <div class="mt-12">
-        <h3 class="text-xl font-extrabold text-right mb-6 text-brand-charcoal">محصولات مرتبط</h3>
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6" id="related-products-grid">
-            @foreach($related as $product)
-                @include('partials.product-card', ['product' => $product])
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-extrabold text-brand-charcoal">محصولات مرتبط</h3>
+            <a href="{{ route('products.index', ['category' => $product->category_id]) }}" class="text-sm text-brand-red hover:underline flex items-center gap-1">
+                مشاهده همه
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+            </a>
+        </div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="related-products-grid">
+            @foreach($related as $rProduct)
+                @include('partials.product-card', ['product' => $rProduct])
             @endforeach
         </div>
     </div>

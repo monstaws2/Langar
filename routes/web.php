@@ -1,14 +1,5 @@
 <?php
 
-use App\Http\Controllers\Admin\AnalyticsController as AdminAnalyticsController;
-use App\Http\Controllers\Admin\BrandController as AdminBrandController;
-use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
-use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
-use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Admin\InventoryController as AdminInventoryController;
-use App\Http\Controllers\Admin\MotorcycleModelController as AdminMotorcycleModelController;
-use App\Http\Controllers\Admin\ProductController as AdminProductController;
-use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductController;
@@ -18,6 +9,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
 
 // Home
@@ -53,41 +45,24 @@ Route::post('/contact', [ContactController::class, 'store'])->name('contact.stor
 Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');
 Route::get('/brands/{slug}', [BrandController::class, 'show'])->name('brands.show');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-// Admin
-Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
-    Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class)->except(['create', 'store']);
-    Route::resource('products', AdminProductController::class);
-    Route::resource('categories', AdminCategoryController::class);
-    Route::resource('brands', AdminBrandController::class);
-
-    // Customers
-    Route::get('/customers', [AdminCustomerController::class, 'index'])->name('customers.index');
-    Route::get('/customers/{customer}', [AdminCustomerController::class, 'show'])->name('customers.show');
-
-    // Reports / Analytics
-    Route::get('/analytics', [AdminAnalyticsController::class, 'index'])->name('analytics.index');
-
-    // Inventory
-    Route::get('/inventory', [AdminInventoryController::class, 'index'])->name('inventory.index');
-    Route::post('/inventory/adjust', [AdminInventoryController::class, 'adjust'])->name('inventory.adjust');
-
-    // Motorcycle Models
-    Route::resource('motorcycle-models', AdminMotorcycleModelController::class);
-
-    // Settings
-    Route::get('/settings', [AdminSettingsController::class, 'index'])->name('settings.index');
-    Route::post('/settings/clear-cache', [AdminSettingsController::class, 'clearCache'])->name('settings.clear-cache');
+// Customer Dashboard (auth required)
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', [OrderController::class, 'dashboard'])->name('dashboard');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
 });
 
+// Profile
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Static pages
+Route::view('/privacy-policy', 'pages.privacy-policy')->name('privacy-policy');
+Route::view('/terms-of-service', 'pages.terms-of-service')->name('terms-of-service');
+Route::view('/shipping-returns', 'pages.shipping-returns')->name('shipping-returns');
+Route::view('/faq', 'pages.faq')->name('faq');
 
 require __DIR__.'/auth.php';
