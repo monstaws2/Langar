@@ -1,7 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'قطعات یدکی موتورسیکلت | لنگرود، گیلان')
-@section('meta_description', 'خانه‌ی موتور — فروشگاه تخصصی قطعات یدکی موتورسیکلت هوندا، یاماها، سوزوکی و کاوازاکی در لنگرود. ضمانت اصالت کالا، ارسال سریع به سراسر ایران. هر روز ۹ صبح تا ۹ شب.')
+@section('title', 'فروشگاه قطعات یدکی موتورسیکلت')
 
 @section('content')
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -148,8 +147,8 @@
                     <i data-lucide="headphones" class="w-5 h-5 text-purple-600"></i>
                 </span>
                 <div>
-                    <p class="font-bold text-brand-charcoal text-sm">پشتیبانی هر روز</p>
-                    <p class="text-xs text-gray-400">۹ صبح تا ۹ شب</p>
+                    <p class="font-bold text-brand-charcoal text-sm">پشتیبانی ۲۴/۷</p>
+                    <p class="text-xs text-gray-400">همیشه در کنار شما</p>
                 </div>
             </div>
         </div>

@@ -6,7 +6,7 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <meta name="theme-color" content="#1A1A1A">
 
-        <title>{{ $header ?? config('app.name', 'خانه‌ی موتور') }} | پنل مدیریت</title>
+        <title>{{ $header ?? config('app.name', 'لنگر موتور') }} | پنل مدیریت</title>
 
         <!-- Fonts: Vazirmatn for Persian text, Inter for numbers -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,7 +34,7 @@
             <!-- Sidebar -->
             <aside class="w-64 bg-[#C0392B] text-white flex flex-col min-h-screen">
                 <div class="p-4 text-2xl font-semibold text-center border-b border-white/20">
-                    خانه‌ی موتور
+                    لنگر موتور
                 </div>
                 <nav class="flex-1 py-4">
                     <ul>
@@ -139,7 +139,7 @@
             <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="closeMobileSidebar"></div>
             <div class="relative w-64 bg-[#C0392B] text-white flex flex-col h-full">
                 <div class="p-4 text-2xl font-semibold text-center border-b border-white/20">
-                    خانه‌ی موتور
+                    لنگر موتور
                 </div>
                 <nav class="flex-1 py-4">
                     <ul>

@@ -23,7 +23,7 @@
                             </span>
                             <div>
                                 <p class="text-sm font-semibold text-zinc-800">آدرس</p>
-                                <p class="text-sm text-zinc-500 leading-relaxed">گیلان، لنگرود، راه پشته، جنب افق کوروش</p>
+                                <p class="text-sm text-zinc-500 leading-relaxed">تهران، خیابان آزادی، ساختمان لنگر موتور</p>
                             </div>
                         </li>
                         <li class="flex items-start gap-3">
@@ -32,16 +32,7 @@
                             </span>
                             <div>
                                 <p class="text-sm font-semibold text-zinc-800">تلفن تماس</p>
-                                <a href="tel:+989936492894" class="text-sm text-zinc-500 font-num hover:text-brand-red" dir="ltr">۰۹۹۳۶۴۹۲۸۹۴</a>
-                            </div>
-                        </li>
-                        <li class="flex items-start gap-3">
-                            <span class="shrink-0 w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center">
-                                <i data-lucide="message-circle" class="w-5 h-5"></i>
-                            </span>
-                            <div>
-                                <p class="text-sm font-semibold text-zinc-800">واتساپ</p>
-                                <a href="https://wa.me/989936492894" target="_blank" rel="noopener" class="text-sm text-zinc-500 font-num hover:text-green-600" dir="ltr">۰۹۹۳۶۴۹۲۸۹۴</a>
+                                <a href="tel:+989991234567" class="text-sm text-zinc-500 font-num hover:text-brand-red" dir="ltr">۰۹۹۹۱۲۳۴۵۶۷</a>
                             </div>
                         </li>
                         <li class="flex items-start gap-3">
@@ -50,7 +41,7 @@
                             </span>
                             <div>
                                 <p class="text-sm font-semibold text-zinc-800">ایمیل</p>
-                                <a href="mailto:info@khanemotor.ir" class="text-sm text-zinc-500 hover:text-brand-red" dir="ltr">info@khanemotor.ir</a>
+                                <a href="mailto:info@langarmotor.ir" class="text-sm text-zinc-500 hover:text-brand-red" dir="ltr">info@langarmotor.ir</a>
                             </div>
                         </li>
                         <li class="flex items-start gap-3">
@@ -59,7 +50,7 @@
                             </span>
                             <div>
                                 <p class="text-sm font-semibold text-zinc-800">ساعات کاری</p>
-                                <p class="text-sm text-zinc-500 leading-relaxed">هر روز ساعت ۹ صبح تا ۹ شب</p>
+                                <p class="text-sm text-zinc-500 leading-relaxed">شنبه تا پنجشنبه: ۹ تا ۱۸ — جمعه: تعطیل</p>
                             </div>
                         </li>
                     </ul>

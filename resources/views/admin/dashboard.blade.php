@@ -8,7 +8,7 @@
     {{-- Welcome heading --}}
     <div>
         <h1 class="text-2xl font-bold text-brand-charcoal">خوش آمدید، مدیر سیستم</h1>
-        <p class="text-sm text-gray-500 mt-1">نمای کلی وضعیت فروشگاه خانه‌ی موتور در یک نگاه</p>
+        <p class="text-sm text-gray-500 mt-1">نمای کلی وضعیت فروشگاه لنگر موتور در یک نگاه</p>
     </div>
 
     {{-- Stat cards --}}

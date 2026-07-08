@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#1A1A1A">
     <meta name="robots" content="noindex, nofollow">
-    <title>@yield('title', 'پنل مدیریت') | خانه‌ی موتور</title>
+    <title>@yield('title', 'پنل مدیریت') | لنگر موتور</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,7 +46,7 @@
                     <i data-lucide="anchor" class="w-5 h-5 text-white"></i>
                 </div>
                 <div class="leading-tight">
-                    <div class="text-white font-bold text-base">خانه‌ی<span class="text-brand-red"> موتور</span></div>
+                    <div class="text-white font-bold text-base">لنگر<span class="text-brand-red">موتور</span></div>
                     <div class="text-[11px] text-gray-400">پنل مدیریت</div>
                 </div>
             </a>

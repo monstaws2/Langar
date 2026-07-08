@@ -16,17 +16,10 @@
                 <span>راهنما</span>
             </a>
         </div>
-        <div class="flex items-center gap-3">
-            <a href="https://wa.me/989936492894" target="_blank" rel="noopener" class="hidden sm:flex items-center gap-1.5 hover:text-white transition">
-                <i data-lucide="message-circle" class="w-3.5 h-3.5 text-green-400"></i>
-                <span>واتساپ</span>
-            </a>
-            <span class="hidden sm:inline text-gray-600">|</span>
-            <a href="tel:+989936492894" class="flex items-center gap-2 hover:text-white transition" dir="ltr">
-                <span class="font-num">۰۹۹۳۶۴۹۲۸۹۴</span>
-                <i data-lucide="phone" class="w-4 h-4 text-brand-orange"></i>
-            </a>
-        </div>
+        <a href="tel:+982112345678" class="flex items-center gap-2 hover:text-white transition" dir="ltr">
+            <span class="font-num">۰۲۱-۱۲۳۴۵۶۷۸</span>
+            <i data-lucide="phone" class="w-4 h-4 text-brand-orange"></i>
+        </a>
     </div>
 </div>
 
@@ -41,7 +34,7 @@
                     <i data-lucide="bike" class="w-6 h-6 text-white"></i>
                 </span>
                 <span class="leading-tight">
-                    <span class="block text-xl font-extrabold text-brand-red">خانه‌ی موتور</span>
+                    <span class="block text-xl font-extrabold text-brand-red">لنگر موتور</span>
                     <span class="block text-[11px] text-gray-400">قطعات اصل موتورسیکلت</span>
                 </span>
             </a>

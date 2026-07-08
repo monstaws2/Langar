@@ -24,7 +24,7 @@
     {{-- Order Number Card --}}
     <div class="bg-brand-charcoal rounded-xl p-6 text-center mb-6">
         <p class="text-gray-400 text-sm mb-1">شماره سفارش</p>
-        <p class="text-3xl font-extrabold text-white font-num tracking-wider">{{ $order->order_number ?? 'KM-' . str_pad($order->id, 6, '0', STR_PAD_LEFT) }}</p>
+        <p class="text-3xl font-extrabold text-white font-num tracking-wider">{{ $order->order_number ?? 'LM-' . str_pad($order->id, 6, '0', STR_PAD_LEFT) }}</p>
         <div class="flex items-center justify-center gap-4 mt-3 text-sm">
             <span class="text-gray-400">تاریخ: <span class="text-white font-num">{{ $order->created_at->format('Y/m/d') }}</span></span>
             <span class="text-gray-600">|</span>

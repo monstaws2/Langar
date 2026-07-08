@@ -4,28 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    {{-- Per-page meta description via @section('meta_description') --}}
-    <meta name="keywords" content="قطعات موتورسیکلت، قطعات یدکی موتور، لنگرود، گیلان، هوندا، یاماها، سوزوکی، کاوازاکی، خانه موتور">
+    <meta name="description" content="لنگر موتور - فروشگاه تخصصی قطعات یدکی موتورسیکلت هوندا، یاماها، سوزوکی و کاوازاکی. اصالت کالا تضمین شده.">
     <meta name="theme-color" content="#1A1A1A">
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Store",
-        "name": "خانه‌ی موتور",
-        "alternateName": "khanemotor",
-        "description": "فروشگاه تخصصی قطعات یدکی موتورسیکلت در لنگرود گیلان",
-        "telephone": "+989936492894",
-        "address": {
-            "@type": "PostalAddress",
-            "streetAddress": "راه پشته، جنب افق کوروش",
-            "addressLocality": "لنگرود",
-            "addressRegion": "گیلان",
-            "addressCountry": "IR"
-        },
-        "openingHours": "Mo-Su 09:00-21:00",
-        "url": "{{ url('/') }}"
-    }
-    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -35,8 +15,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 
-    <meta name="description" content="@yield('meta_description', 'خانه‌ی موتور - فروشگاه تخصصی قطعات یدکی موتورسیکلت در لنگرود گیلان. قطعات اصل با ضمانت اصالت. ارسال به سراسر ایران.')">
-    <title>@yield('title', 'صفحه اصلی') | خانه‌ی موتور</title>
+    <title>@yield('title', 'صفحه اصلی') | لنگر موتور</title>
 
     <style>
         body { font-family: 'Vazirmatn', sans-serif; }

@@ -6,20 +6,20 @@
                 <span class="w-9 h-9 rounded-lg bg-brand-red flex items-center justify-center">
                     <i data-lucide="bike" class="w-5 h-5 text-white"></i>
                 </span>
-                <span class="text-xl font-extrabold text-brand-red">خانه‌ی موتور</span>
+                <span class="text-xl font-extrabold text-brand-red">لنگر موتور</span>
             </div>
             <p class="text-gray-400 leading-relaxed text-sm">
                 فروشگاه تخصصی قطعات یدکی موتورسیکلت هوندا، یاماها، سوزوکی و کاوازاکی. تامین قطعات اصل با ضمانت اصالت کالا و ارسال سریع به سراسر ایران.
             </p>
             <div class="mt-5 flex items-center gap-3">
                 <span class="text-xs text-gray-500 block">ما را دنبال کنید:</span>
-                <a href="https://instagram.com/khanemotor" target="_blank" rel="noopener" aria-label="اینستاگرام" class="w-9 h-9 rounded-full bg-white/10 hover:bg-brand-red transition flex items-center justify-center">
+                <a href="https://instagram.com/langarmotor" target="_blank" rel="noopener" aria-label="اینستاگرام" class="w-9 h-9 rounded-full bg-white/10 hover:bg-brand-red transition flex items-center justify-center">
                     <i data-lucide="instagram" class="w-5 h-5"></i>
                 </a>
-                <a href="https://t.me/khanemotor" target="_blank" rel="noopener" aria-label="تلگرام" class="w-9 h-9 rounded-full bg-white/10 hover:bg-brand-red transition flex items-center justify-center">
+                <a href="https://t.me/langarmotor" target="_blank" rel="noopener" aria-label="تلگرام" class="w-9 h-9 rounded-full bg-white/10 hover:bg-brand-red transition flex items-center justify-center">
                     <i data-lucide="send" class="w-5 h-5"></i>
                 </a>
-                <a href="https://wa.me/989936492894" target="_blank" rel="noopener" aria-label="واتساپ" class="w-9 h-9 rounded-full bg-white/10 hover:bg-brand-red transition flex items-center justify-center">
+                <a href="https://wa.me/982112345678" target="_blank" rel="noopener" aria-label="واتساپ" class="w-9 h-9 rounded-full bg-white/10 hover:bg-brand-red transition flex items-center justify-center">
                     <i data-lucide="message-circle" class="w-5 h-5"></i>
                 </a>
             </div>
@@ -56,25 +56,25 @@
                     <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
                         <i data-lucide="map-pin" class="w-4 h-4 text-brand-orange"></i>
                     </div>
-                    <span class="text-gray-400">گیلان، لنگرود، راه پشته، جنب افق کوروش</span>
+                    <span class="text-gray-400">تهران، خیابان آزادی</span>
                 </li>
                 <li class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
                         <i data-lucide="phone" class="w-4 h-4 text-brand-orange"></i>
                     </div>
-                    <a href="tel:+989936492894" class="text-gray-400 hover:text-white font-num transition" dir="ltr">۰۹۹۳۶۴۹۲۸۹۴</a>
+                    <a href="tel:+982112345678" class="text-gray-400 hover:text-white font-num transition" dir="ltr">۰۲۱-۱۲۳۴۵۶۷۸</a>
                 </li>
                 <li class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
                         <i data-lucide="mail" class="w-4 h-4 text-brand-orange"></i>
                     </div>
-                    <a href="mailto:info@khanemotor.ir" class="text-gray-400 hover:text-white transition">info@khanemotor.ir</a>
+                    <a href="mailto:info@langarmotor.ir" class="text-gray-400 hover:text-white transition">info@langarmotor.ir</a>
                 </li>
                 <li class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
                         <i data-lucide="clock" class="w-4 h-4 text-brand-orange"></i>
                     </div>
-                    <span class="text-gray-400">هر روز ساعت ۹ صبح تا ۹ شب</span>
+                    <span class="text-gray-400">شنبه تا پنجشنبه ۹ صبح تا ۶ عصر</span>
                 </li>
             </ul>
         </div>
@@ -83,7 +83,7 @@
     {{-- Bottom bar --}}
     <div class="border-t border-white/10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <p class="text-gray-500 text-sm">تمامی حقوق برای خانه‌ی موتور محفوظ است &copy; ۱۴۰۳</p>
+            <p class="text-gray-500 text-sm">تمامی حقوق برای لنگر موتور محفوظ است &copy; ۱۴۰۳</p>
             <div class="flex items-center gap-1 text-gray-500 text-xs">
                 <i data-lucide="shield-check" class="w-3 h-3 text-brand-orange"></i>
                 <span>خرید امن با ضمانت اصالت کالا</span>
