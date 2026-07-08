@@ -12,12 +12,12 @@ class HomeController extends Controller
     {
         $categories = Category::where('is_active', true)->get();
         $brands = Brand::all();
-        $products = Product::where('is_active', true)
+        $latestProducts = Product::where('is_active', true)
             ->with(['brand', 'category'])
             ->latest()
             ->limit(8)
             ->get();
 
-        return view('home.index', compact('categories', 'brands', 'products'));
+        return view('home.index', compact('categories', 'brands', 'latestProducts'));
     }
 }

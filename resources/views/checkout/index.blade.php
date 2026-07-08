@@ -48,32 +48,84 @@
                         <div>
                             <label for="name" class="block text-sm font-medium text-gray-700 mb-1">نام و نام خانوادگی *</label>
                             <input type="text" name="name" id="name" value="{{ old('name', auth()->user()->name ?? '') }}"
-                                   class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-red/30 focus:border-brand-red text-sm" required>
+                                   class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-brand-red/30 text-sm
+                                   @error('name') border-red-500 focus:border-red-500 @else border-gray-200 focus:border-brand-red @enderror">
+                            @error('name')
+                                <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                         <div>
                             <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">شماره تماس *</label>
                             <input type="tel" name="phone" id="phone" value="{{ old('phone') }}" dir="ltr"
-                                   class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-red/30 focus:border-brand-red text-sm font-num" required>
+                                   class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-brand-red/30 text-sm font-num
+                                   @error('phone') border-red-500 focus:border-red-500 @else border-gray-200 focus:border-brand-red @enderror">
+                            @error('phone')
+                                <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
                     </div>
 
                     <div>
                         <label for="address" class="block text-sm font-medium text-gray-700 mb-1">آدرس کامل *</label>
                         <textarea name="address" id="address" rows="3"
-                                  class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-red/30 focus:border-brand-red text-sm" required>{{ old('address') }}</textarea>
+                                  class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-brand-red/30 text-sm
+                                  @error('address') border-red-500 focus:border-red-500 @else border-gray-200 focus:border-brand-red @enderror">{{ old('address') }}</textarea>
+                        @error('address')
+                            <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" x-data="{
+                        province: '{{ old('province') }}',
+                        city: '{{ old('city') }}',
+                        cities: []
+                    }" x-init="
+                        let found = window.iranLocations.find(p => p.province === province);
+                        if (found) { cities = found.cities }
+                    ">
+                        <div>
+                            <label for="province" class="block text-sm font-medium text-gray-700 mb-1">استان *</label>
+                            <select name="province" id="province" x-model="province"
+                                    @change="
+                                        let match = window.iranLocations.find(p => p.province === province);
+                                        cities = match ? match.cities : [];
+                                        city = '';
+                                    "
+                                    class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-brand-red/30 text-sm bg-white
+                                    @error('province') border-red-500 focus:border-red-500 @else border-gray-200 focus:border-brand-red @enderror">
+                                <option value="">انتخاب استان</option>
+                                <template x-for="p in window.iranLocations" :key="p.province">
+                                    <option :value="p.province" x-text="p.province" :selected="p.province === province"></option>
+                                </template>
+                            </select>
+                            @error('province')
+                                <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
                         <div>
                             <label for="city" class="block text-sm font-medium text-gray-700 mb-1">شهر *</label>
-                            <input type="text" name="city" id="city" value="{{ old('city') }}"
-                                   class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-red/30 focus:border-brand-red text-sm" required>
+                            <select name="city" id="city" x-model="city" :disabled="cities.length === 0"
+                                    class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-brand-red/30 text-sm bg-white disabled:bg-gray-50 disabled:text-gray-400
+                                    @error('city') border-red-500 focus:border-red-500 @else border-gray-200 focus:border-brand-red @enderror">
+                                <option value="">ابتدا استان را انتخاب کنید</option>
+                                <template x-for="c in cities" :key="c">
+                                    <option :value="c" x-text="c" :selected="c === city"></option>
+                                </template>
+                            </select>
+                            @error('city')
+                                <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                            @enderror
                         </div>
-                        <div>
-                            <label for="postal_code" class="block text-sm font-medium text-gray-700 mb-1">کد پستی *</label>
-                            <input type="text" name="postal_code" id="postal_code" value="{{ old('postal_code') }}" dir="ltr"
-                                   class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-brand-red/30 focus:border-brand-red text-sm font-num" required>
-                        </div>
+                    </div>
+
+                    <div>
+                        <label for="postal_code" class="block text-sm font-medium text-gray-700 mb-1">کد پستی *</label>
+                        <input type="text" name="postal_code" id="postal_code" value="{{ old('postal_code') }}" dir="ltr"
+                               class="w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-brand-red/30 text-sm font-num
+                               @error('postal_code') border-red-500 focus:border-red-500 @else border-gray-200 focus:border-brand-red @enderror">
+                        @error('postal_code')
+                            <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
                     <div class="pt-4">

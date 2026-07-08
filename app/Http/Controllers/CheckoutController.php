@@ -60,18 +60,20 @@ class CheckoutController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+                $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
+            'phone' => ['required', 'string', 'regex:/^09[0-9]{9}$/'],
             'address' => 'required|string|max:500',
             'city' => 'required|string|max:100',
-            'postal_code' => 'required|string|max:20',
+            'postal_code' => ['required', 'string', 'regex:/^[0-9]{10}$/'],
         ], [
             'name.required' => 'لطفاً نام و نام خانوادگی خود را وارد کنید.',
             'phone.required' => 'لطفاً شماره تماس خود را وارد کنید.',
+            'phone.regex' => 'شماره موبایل باید ۱۱ رقم باشد و با ۰۹ شروع شود.',
             'address.required' => 'لطفاً آدرس خود را وارد کنید.',
             'city.required' => 'لطفاً شهر خود را وارد کنید.',
             'postal_code.required' => 'لطفاً کد پستی خود را وارد کنید.',
+            'postal_code.regex' => 'کد پستی باید دقیقاً ۱۰ رقم باشد.',
         ]);
 
         $cart = session('cart', []);
