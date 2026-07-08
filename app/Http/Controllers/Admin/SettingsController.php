@@ -15,7 +15,7 @@ class SettingsController extends Controller
     public function index()
     {
         $settings = [
-            'store_name' => config('app.name', 'لنگر موتور'),
+            'store_name' => config('app.name', 'خانه‌ی موتور'),
             'items_per_page' => 15,
             'low_stock_threshold' => 5,
             'currency' => 'تومان',

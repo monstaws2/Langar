@@ -32,17 +32,17 @@
                     </td>
                     <td class="px-6 py-4">
                         @php
-                            $badgeColors = [
-                                'pending' => 'bg-amber-100 text-amber-700',
-                                'paid' => 'bg-blue-100 text-blue-700',
-                                'shipped' => 'bg-indigo-100 text-indigo-700',
-                                'delivered' => 'bg-green-100 text-green-700',
-                                'cancelled' => 'bg-red-100 text-red-700',
+                            $statusBadge = [
+                                'pending'   => ['label' => 'در انتظار', 'class' => 'bg-amber-100 text-amber-700'],
+                                'paid'      => ['label' => 'پرداخت شده', 'class' => 'bg-blue-100 text-blue-700'],
+                                'shipped'   => ['label' => 'ارسال شده', 'class' => 'bg-indigo-100 text-indigo-700'],
+                                'delivered' => ['label' => 'تحویل شده', 'class' => 'bg-green-100 text-green-700'],
+                                'cancelled' => ['label' => 'لغو شده', 'class' => 'bg-red-100 text-red-700'],
                             ];
-                            $color = $badgeColors[$order->status] ?? 'bg-gray-100 text-gray-700';
+                            $badge = $statusBadge[$order->status] ?? ['label' => $order->status, 'class' => 'bg-gray-100 text-gray-700'];
                         @endphp
-                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium {{ $color }}">
-                            {{ ucfirst($order->status) }}
+                        <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium {{ $badge['class'] }}">
+                            {{ $badge['label'] }}
                         </span>
                     </td>
                     <td class="px-6 py-4 text-gray-500 font-num">

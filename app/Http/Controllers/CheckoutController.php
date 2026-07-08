@@ -130,7 +130,7 @@ class CheckoutController extends Controller
 
             // Generate order number after we have the ID
             $order->update([
-                'order_number' => 'LM-' . str_pad($order->id, 6, '0', STR_PAD_LEFT),
+                'order_number' => 'KM-' . str_pad($order->id, 6, '0', STR_PAD_LEFT),
             ]);
 
             // Create order items
