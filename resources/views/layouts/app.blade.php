@@ -8,6 +8,7 @@
     <meta name="keywords" content="قطعات موتورسیکلت، قطعات یدکی موتور، لنگرود، گیلان، هوندا، یاماها، سوزوکی، کاوازاکی، خانه موتور">
     <meta name="theme-color" content="#1A1A1A">
     <script type="application/ld+json">
+    @verbatim
     {
         "@context": "https://schema.org",
         "@type": "Store",
@@ -22,9 +23,9 @@
             "addressRegion": "گیلان",
             "addressCountry": "IR"
         },
-        "openingHours": "Mo-Su 09:00-21:00",
-        "url": "{{ url('/') }}"
+        "openingHours": "Mo-Su 09:00-21:00"
     }
+    @endverbatim
     </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
