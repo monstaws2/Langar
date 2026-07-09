@@ -122,7 +122,7 @@
                         ],
                         [
                             'q' => 'آیا پرداخت اینترنتی امن است؟',
-                            'a' => 'بله، تمامی تراکنش‌ها از طریق درگاه‌های بانکی معتبر با پروتکل SSL رمزنگاری شده انجام می‌شوند و لنگر موتور به هیچ وجه به اطلاعات کارت بانکی شما دسترسی ندارد.'
+                            'a' => 'بله، تمامی تراکنش‌ها از طریق درگاه‌های بانکی معتبر با پروتکل SSL رمزنگاری شده انجام می‌شوند و خانه‌ی موتور به هیچ وجه به اطلاعات کارت بانکی شما دسترسی ندارد.'
                         ],
                         [
                             'q' => 'آیا امکان پرداخت اقساطی وجود دارد؟',
@@ -189,7 +189,7 @@
     {{-- Contact CTA --}}
     <div class="mt-10 bg-brand-charcoal rounded-2xl p-8 text-center">
         <h3 class="text-xl font-bold text-white mb-2">هنوز سوال دارید؟</h3>
-        <p class="text-gray-400 mb-6">تیم پشتیبانی لنگر موتور آماده پاسخگویی به شماست</p>
+        <p class="text-gray-400 mb-6">تیم پشتیبانی خانه‌ی موتور آماده پاسخگویی به شماست</p>
         <a href="{{ route('contact.index') }}" class="inline-flex items-center gap-2 bg-brand-red text-white hover:bg-red-700 px-6 py-3 rounded-lg transition">
             <i data-lucide="message-circle" class="w-5 h-5"></i>
             <span>تماس با پشتیبانی</span>

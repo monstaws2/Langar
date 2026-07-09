@@ -9,7 +9,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold text-brand-charcoal">مدیریت محصولات</h1>
-            <p class="text-sm text-gray-500 mt-1">لیست کامل محصولات فروشگاه لنگر موتور</p>
+            <p class="text-sm text-gray-500 mt-1">لیست کامل محصولات فروشگاه خانه‌ی موتور</p>
         </div>
         <a href="{{ route('admin.products.create') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-brand-red text-white rounded-lg text-sm font-medium hover:bg-brand-red-dark transition-colors shadow-sm">
             <i data-lucide="plus" class="w-4 h-4"></i>

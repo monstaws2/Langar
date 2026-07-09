@@ -1,0 +1,54 @@
+First, re-read and re-sync with the current state of the connected GitHub 
+repository before making any changes. Make sure you are working from the 
+latest code, not a cached or outdated version.
+
+I am polishing an existing Iranian motorcycle parts e-commerce website. 
+Do NOT rebuild the site from scratch or change the core layout/structure — 
+only refine, beautify, and optimize what already exists.
+
+STORE IDENTITY (update everywhere this info currently appears — header, 
+footer, contact page, about page, meta tags, structured data):
+- Store name (Farsi): خانه‌ی موتور
+- Store name (English/URL-safe): khanemotor
+- Phone number: 09936492894 (also add as WhatsApp button — same number)
+- Address: گیلان، لنگرود، راه پشته، جنب افق کوروش
+- Support hours: هر روز ساعت ۹ صبح تا ۹ شب (Every day 9 AM to 9 PM)
+- Replace ALL old/placeholder store name, phone number, and address 
+  references site-wide, including in the admin panel, invoices/order 
+  confirmations, and any SEO meta tags or JSON-LD schema.
+
+DESIGN RULES (keep these unchanged):
+- Keep the current RTL layout (dir="rtl", lang="fa") everywhere
+- Keep the current color palette exactly as is
+- Keep the current page structure and navigation — do not remove or 
+  rename existing sections/pages
+
+WHAT TO IMPROVE:
+1. Visual polish — tighten spacing, alignment, shadows, border-radius 
+   consistency, button states (hover/active/disabled), and typography 
+   hierarchy across all customer-facing pages.
+2. Micro-interactions — smooth transitions, loading states, subtle 
+   hover/focus feedback on buttons, cards, and form fields.
+3. Speed and performance — optimize image loading (lazy loading), reduce 
+   layout shift, and make navigation feel instant.
+4. Mobile responsiveness — double-check every page looks clean and 
+   professional on small screens, not just desktop.
+5. Admin panel — apply the same level of visual polish here too: cleaner 
+   tables, better spacing, clear status badges (pending/paid/shipped/etc.), 
+   and a more organized dashboard feel. Keep all current admin 
+   functionality intact — this is a visual and UX pass only.
+6. Accessibility and clarity — readable contrast, clear call-to-action 
+   buttons, and an easy, frictionless path from browsing to checkout.
+7. SEO — write clean, natural Farsi meta titles/descriptions and About 
+   Us copy that would help "خانه‌ی موتور" rank well for Iranian searches 
+   related to motorcycle parts, without sounding stuffed with keywords.
+
+You have creative freedom on the specific visual details, spacing 
+choices, and micro-interaction style — use your best judgment for what 
+looks clean, modern, fast, and trustworthy for an Iranian online store. 
+Just don't touch the color palette, RTL direction, or overall page 
+structure.
+
+Work through this section by section rather than all at once, and check 
+in after each major area (homepage, product pages, cart/checkout, admin) 
+before moving to the next.

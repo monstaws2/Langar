@@ -1,8 +1,12 @@
 {{-- Expects: $product (with brand & category loaded) --}}
-<div class="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col group" data-card>
+<div class="bg-white rounded-2xl shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 overflow-hidden flex flex-col group" data-card>
     <a href="{{ route('products.show', $product->slug) }}" class="block">
         <div class="relative bg-brand-offwhite h-44 flex items-center justify-center overflow-hidden">
-            <i data-lucide="{{ $product->category->icon ?? 'package' }}" class="w-16 h-16 text-brand-charcoal/30 group-hover:scale-110 transition-transform duration-300"></i>
+            @if($product->image)
+                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+            @else
+                <i data-lucide="{{ $product->category->icon ?? 'package' }}" class="w-16 h-16 text-brand-charcoal/30 group-hover:scale-110 transition-transform duration-300"></i>
+            @endif
             @if($product->brand)
                 <span class="absolute top-3 right-3 bg-brand-orange text-white text-[11px] px-2 py-1 rounded-full font-bold">{{ $product->brand->name }}</span>
             @endif
@@ -26,10 +30,20 @@
         </div>
         <form action="{{ route('cart.add', $product) }}" method="POST" class="mt-3">
             @csrf
-            <button type="submit" class="w-full inline-flex items-center justify-center gap-2 py-2.5 bg-brand-orange hover:bg-brand-orange-dark text-white rounded-lg text-sm font-bold transition" data-add-to-cart>
-                <i data-lucide="shopping-cart" class="w-4 h-4"></i>
-                افزودن به سبد
-            </button>
+            @if($product->stock > 0)
+                <button type="submit"
+                    class="w-full inline-flex items-center justify-center gap-2 py-2.5 bg-brand-orange hover:bg-amber-600 active:scale-95 text-white rounded-lg text-sm font-bold transition-all duration-150"
+                    data-add-to-cart>
+                    <i data-lucide="shopping-cart" class="w-4 h-4"></i>
+                    افزودن به سبد
+                </button>
+            @else
+                <button type="button" disabled
+                    class="w-full inline-flex items-center justify-center gap-2 py-2.5 bg-gray-200 text-gray-400 rounded-lg text-sm font-bold cursor-not-allowed">
+                    <i data-lucide="x-circle" class="w-4 h-4"></i>
+                    ناموجود
+                </button>
+            @endif
         </form>
     </div>
 </div>

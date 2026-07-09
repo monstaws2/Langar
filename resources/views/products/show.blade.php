@@ -22,7 +22,7 @@
         <div class="md:col-span-1" data-product-panel>
             <div class="bg-white rounded-2xl border border-gray-200 h-80 sm:h-96 flex items-center justify-center relative overflow-hidden">
                 @if($product->image)
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
                 @else
                     <div class="flex flex-col items-center text-gray-300">
                         <i data-lucide="{{ $product->category->icon ?? 'package' }}" class="w-24 h-24 sm:w-28 sm:h-28"></i>

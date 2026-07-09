@@ -9,7 +9,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <h1 class="text-2xl font-bold text-brand-charcoal">گزارش‌ها</h1>
-            <p class="text-sm text-gray-500 mt-1">آمار و تحلیل فروشگاه لنگر موتور</p>
+            <p class="text-sm text-gray-500 mt-1">آمار و تحلیل فروشگاه خانه‌ی موتور</p>
         </div>
         <form method="GET" action="{{ route('admin.analytics.index') }}" class="flex items-center gap-2">
             <select name="period" onchange="this.form.submit()" class="bg-white rounded-lg px-3 py-2.5 text-sm border border-gray-200 focus:ring-2 focus:ring-brand-red/30 focus:border-brand-red/50 transition-all">
