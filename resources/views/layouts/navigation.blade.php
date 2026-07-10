@@ -110,7 +110,7 @@
                         </div>
                     </div>
                 @else
-                    <a href="{{ route('login') }}" class="hidden sm:inline-flex items-center gap-1.5 border border-brand-red text-white hover:bg-brand-red rounded-lg px-3 py-2 text-sm transition">
+                    <a href="{{ route('otp.request.form') }}" class="hidden sm:inline-flex items-center gap-1.5 border border-brand-red text-white hover:bg-brand-red rounded-lg px-3 py-2 text-sm transition">
                         <i data-lucide="log-in" class="w-4 h-4"></i>
                         <span>ورود | ثبت‌نام</span>
                     </a>
@@ -154,7 +154,7 @@
                         <a href="{{ route('orders.index') }}" class="text-gray-200 block px-3 py-2 rounded-md hover:bg-white/10 text-sm">سفارش‌های من</a>
                     </div>
                 @else
-                    <a href="{{ route('login') }}" class="text-gray-200 block px-3 py-2 rounded-md hover:bg-white/10 text-sm">ورود | ثبت‌نام</a>
+                    <a href="{{ route('otp.request.form') }}" class="text-gray-200 block px-3 py-2 rounded-md hover:bg-white/10 text-sm">ورود | ثبت‌نام</a>
                 @endauth
             </div>
         </div>

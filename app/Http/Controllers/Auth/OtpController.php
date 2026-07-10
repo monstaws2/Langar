@@ -29,8 +29,7 @@ class OtpController extends Controller
             'expires_at' => now()->addMinutes(5),
         ]);
 
-        // TODO: send via Kavenegar. For now, log it so we can test.
-        logger()->info("OTP for {$request->phone}: {$code}");
+        app(\App\Services\SmsService::class)->sendOtp($request->phone, $code);
 
         return redirect()->route('otp.verify.form', ['phone' => $request->phone])
             ->with('success', 'کد تایید ارسال شد.');

@@ -1,4 +1,9 @@
 <x-guest-layout>
+
+
+    <div class="mb-4 text-sm text-gray-500 text-center">
+    این صفحه مخصوص ورود مدیر است. مشتریان از <a href="{{ route('otp.request.form') }}" class="text-blue-600 underline">اینجا</a> وارد شوند.
+    </div>
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
