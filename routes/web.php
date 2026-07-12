@@ -11,7 +11,12 @@ use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\OtpController;
 
+Route::get('/login-otp', [OtpController::class, 'showRequestForm'])->name('otp.request.form');
+Route::post('/login-otp', [OtpController::class, 'sendCode'])->name('otp.send');
+Route::get('/verify-otp', [OtpController::class, 'showVerifyForm'])->name('otp.verify.form');
+Route::post('/verify-otp', [OtpController::class, 'verifyCode'])->name('otp.verify');
 // Home
 Route::get('/', [HomeController::class, 'index'])->name('home');
 

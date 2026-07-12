@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -10,18 +9,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'is_admin'])]
+#[Fillable(['name', 'email', 'phone', 'password', 'is_admin'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -31,17 +25,11 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Get the orders for this user.
-     */
     public function orders()
     {
         return $this->hasMany(Order::class);
     }
 
-    /**
-     * Get the total amount spent by this user.
-     */
     public function totalSpent(): int
     {
         return $this->orders()
@@ -49,9 +37,6 @@ class User extends Authenticatable
             ->sum('total_price') ?? 0;
     }
 
-    /**
-     * Get the formatted total spent.
-     */
     public function formattedTotalSpent(): string
     {
         return \App\Support\Format::price($this->totalSpent());

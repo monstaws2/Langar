@@ -13,6 +13,10 @@ return [
     | a conventional file to locate the various service credentials.
     |
     */
+    'smsir' => [
+    'api_key' => env('SMSIR_API_KEY'),
+    'otp_template_id' => env('SMSIR_OTP_TEMPLATE_ID'),
+],
 
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),
