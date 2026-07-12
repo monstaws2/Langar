@@ -1,0 +1,3 @@
+- [Migration safety patterns](migration-safety.md) — duplicate-column migrations must guard with hasColumn/hasTable; empty stubs will break SoftDeletes and similar features.
+- [PHP version for this repo](php-version.md) — Laravel 13 requires PHP 8.3+; Replit defaults to 8.2 — always install php-8.4 module and set composer.json platform to 8.4.0.
+- [Test Vite manifest stub](vite-test-stub.md) — feature tests that render full pages 500 without a valid public/build/manifest.json; keep a stub manifest with real entry keys.
