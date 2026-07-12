@@ -12,14 +12,14 @@
     </div>
 
     {{-- Stat cards --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
         <x-admin.partials.stat-card
             icon="shopping-cart"
             iconBg="bg-red-50"
             iconColor="text-brand-red"
             :value="\App\Support\Format::digits($ordersToday)"
             label="سفارش‌های امروز"
-            link="#"
+            :link="route('admin.orders.index')"
             linkText="مشاهده سفارش‌ها" />
 
         <x-admin.partials.stat-card
@@ -28,7 +28,7 @@
             iconColor="text-brand-orange"
             :value="\App\Support\Format::price($revenueToday)"
             label="درآمد امروز (تومان)"
-            link="#"
+            :link="route('admin.analytics.index')"
             linkText="مشاهده گزارش" />
 
         <x-admin.partials.stat-card
@@ -37,7 +37,7 @@
             iconColor="text-brand-charcoal"
             :value="\App\Support\Format::digits($productsCount)"
             label="تعداد محصولات"
-            link="#"
+            :link="route('admin.products.index')"
             linkText="مشاهده همه" />
 
         <x-admin.partials.stat-card
@@ -46,8 +46,17 @@
             iconColor="text-amber-500"
             :value="\App\Support\Format::digits($lowStockCount)"
             label="هشدار موجودی کم"
-            link="#"
+            :link="route('admin.inventory.index')"
             linkText="مشاهده جزئیات" />
+
+        <x-admin.partials.stat-card
+            icon="message-square"
+            iconBg="bg-blue-50"
+            iconColor="text-blue-500"
+            :value="\App\Support\Format::digits($pendingReviewsCount)"
+            label="نظرات در انتظار"
+            :link="route('admin.reviews.index', ['status' => 'pending'])"
+            linkText="بررسی نظرات" />
     </div>
 
     {{-- Orders table + chart --}}
@@ -72,12 +81,12 @@
     document.addEventListener('DOMContentLoaded', function () {
         if (window.anime) {
             anime({
-                targets: '.grid > div',
-                opacity: [0, 1],
+                targets: '.grid > *',
+                opacity:    [0, 1],
                 translateY: [12, 0],
-                duration: 500,
-                delay: anime.stagger(80),
-                easing: 'easeOutCubic',
+                duration:   500,
+                delay:      anime.stagger(80),
+                easing:     'easeOutCubic',
             });
         }
     });

@@ -20,15 +20,28 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_admin' => 'boolean',
+            'password'          => 'hashed',
+            'is_admin'          => 'boolean',
         ];
     }
+
+    /* ------------------------------------------------------------------ */
+    /*  Relationships                                                        */
+    /* ------------------------------------------------------------------ */
 
     public function orders()
     {
         return $this->hasMany(Order::class);
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Helpers                                                              */
+    /* ------------------------------------------------------------------ */
 
     public function totalSpent(): int
     {
@@ -40,5 +53,31 @@ class User extends Authenticatable
     public function formattedTotalSpent(): string
     {
         return \App\Support\Format::price($this->totalSpent());
+    }
+
+    /**
+     * True when the user has at least one paid/shipped/delivered order
+     * that contains the given product.
+     */
+    public function hasPurchased(Product $product): bool
+    {
+        return $this->orders()
+            ->whereIn('status', ['paid', 'shipped', 'delivered'])
+            ->whereHas('items', fn ($q) => $q->where('product_id', $product->id))
+            ->exists();
+    }
+
+    /**
+     * Returns the first matching OrderItem for a verified purchase, or null.
+     */
+    public function purchasedOrderItem(Product $product): ?OrderItem
+    {
+        $order = $this->orders()
+            ->whereIn('status', ['paid', 'shipped', 'delivered'])
+            ->whereHas('items', fn ($q) => $q->where('product_id', $product->id))
+            ->latest()
+            ->first();
+
+        return $order?->items()->where('product_id', $product->id)->first();
     }
 }

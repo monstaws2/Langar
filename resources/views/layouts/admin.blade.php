@@ -93,6 +93,14 @@
                 <i data-lucide="bar-chart-3" class="w-5 h-5 shrink-0"></i>
                 <span>گزارش‌ها</span>
             </a>
+            @php $__pendingReviews = \App\Models\Review::where('is_approved', false)->count(); @endphp
+            <a href="{{ route('admin.reviews.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.reviews.*') ? 'bg-brand-red text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
+                <i data-lucide="message-square" class="w-5 h-5 shrink-0"></i>
+                <span>نظرات</span>
+                @if($__pendingReviews > 0)
+                    <span class="mr-auto bg-amber-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none">{{ $__pendingReviews }}</span>
+                @endif
+            </a>
             <a href="{{ route('admin.settings.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors {{ request()->routeIs('admin.settings.*') ? 'bg-brand-red text-white' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}">
                 <i data-lucide="settings" class="w-5 h-5 shrink-0"></i>
                 <span>تنظیمات</span>

@@ -1,0 +1,84 @@
+You are working inside the existing Langar Laravel repository.
+
+Read this first and follow it exactly:
+- Inspect current migrations, Product/User/Order/OrderItem models, product controllers, admin controllers, route files, and product/admin Blade views before changing code.
+- Do not touch OTP or the current /admin routing setup unless you find a confirmed conflict.
+- Do not guess column names. Use existing schema first; add migrations only for truly missing review fields.
+- Show the full content of every changed file.
+
+Goal:
+Build a complete, production-ready product review system for this existing Laravel motorcycle-parts shop.
+
+Context:
+- The project already has products, users, orders, order items, product pages, admin pages, and separate route files.
+- Keep the current Laravel + Blade + Tailwind approach.
+- The UI must be RTL and friendly for Farsi users.
+
+Build these features:
+
+1) Database and model layer
+- Create a reviews table if it does not exist.
+- Suggested fields: id, product_id, user_id, order_item_id nullable, rating (1-5), title nullable, body, is_approved boolean, is_verified_purchase boolean, admin_reply nullable, approved_at nullable, created_at, updated_at.
+- If the repo already has some of these fields in another form, adapt to the existing schema instead of duplicating them.
+- Create Review model with relationships to Product and User.
+- Add missing relationships to Product and User models.
+- If useful, add aggregate helpers like averageRating(), reviewsCount(), approvedReviews().
+
+2) Review rules
+- Only logged-in users can submit reviews.
+- Prefer “verified purchase only” review creation if the current order schema supports it.
+- One user should not be able to spam duplicate reviews for the same product unless the business rule says otherwise; if needed, allow one review per product per user.
+- Only approved reviews show publicly.
+- Admin can approve, reject, and reply.
+- Rating must be validated 1 to 5.
+- Use clean Persian validation/error messages where appropriate.
+
+3) Public store UI
+- Add a review section to the single product page.
+- Show average rating, number of approved reviews, star display, and list of approved reviews.
+- Show “verified purchase” badge where applicable.
+- Add a review submission form for eligible logged-in users.
+- If guest users try to review, show a clear login prompt without breaking the page.
+- Keep the layout RTL and visually consistent with the rest of the storefront.
+
+4) Admin moderation
+- Add admin routes, controller actions, and views for:
+  - review list
+  - pending reviews
+  - approve/reject
+  - admin reply
+  - filter by product, rating, status, verified purchase
+- Add review counts or a pending-review card in the admin dashboard if it fits the existing design.
+- Reuse the current admin structure instead of inventing a separate admin panel.
+
+5) Performance and UX
+- Eager load relationships to avoid N+1 issues.
+- Paginate public review lists and admin review lists.
+- Sanitize or safely render text.
+- Display human-friendly dates.
+- Keep the markup simple and maintainable.
+
+6) Tests
+- Add feature tests for:
+  - guest cannot submit
+  - authenticated user can submit
+  - invalid rating fails
+  - unapproved review is hidden publicly
+  - admin can approve/reject
+  - verified purchase logic works if supported by current schema
+
+7) Deliverables
+- First give me a short implementation plan based on the files you inspected.
+- Then provide the full content of every new/changed file.
+- Then provide exact commands I should run.
+- Then provide a manual test checklist:
+  1. create/login user
+  2. visit product page
+  3. submit review
+  4. approve in admin
+  5. confirm review appears publicly
+
+Important:
+- Do not replace unrelated code.
+- Do not break checkout, OTP, or admin login.
+- Match the current repo’s naming, route style, and view structure.

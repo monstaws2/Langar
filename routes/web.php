@@ -50,6 +50,11 @@ Route::post('/contact', [ContactController::class, 'store'])->name('contact.stor
 Route::get('/brands', [BrandController::class, 'index'])->name('brands.index');
 Route::get('/brands/{slug}', [BrandController::class, 'show'])->name('brands.show');
 
+// Reviews — auth required, no email verification needed
+Route::post('/products/{slug}/reviews', [\App\Http\Controllers\ReviewController::class, 'store'])
+    ->middleware('auth')
+    ->name('reviews.store');
+
 // Customer Dashboard (auth required)
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [OrderController::class, 'dashboard'])->name('dashboard');
