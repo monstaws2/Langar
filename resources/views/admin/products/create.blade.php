@@ -38,8 +38,9 @@
 
             {{-- Slug --}}
             <div>
-                <label for="slug" class="block text-sm font-medium text-brand-charcoal mb-2">شناسه (slug) <span class="text-brand-red">*</span></label>
-                <input type="text" id="slug" name="slug" value="{{ old('slug') }}" required dir="ltr" class="w-full bg-gray-50 rounded-lg px-4 py-2.5 text-sm border border-gray-200 focus:ring-2 focus:ring-brand-red/30 focus:bg-white focus:border-brand-red/50 transition-all font-num" placeholder="peugeot-206-front-brake-pad">
+                <label for="slug" class="block text-sm font-medium text-brand-charcoal mb-2">شناسه (slug)</label>
+                <input type="text" id="slug" name="slug" value="{{ old('slug') }}" dir="ltr" class="w-full bg-gray-50 rounded-lg px-4 py-2.5 text-sm border border-gray-200 focus:ring-2 focus:ring-brand-red/30 focus:bg-white focus:border-brand-red/50 transition-all font-num" placeholder="peugeot-206-front-brake-pad">
+                <p class="text-xs text-gray-400 mt-1.5">آدرس محصول در سایت. اگر خالی بگذارید، به‌صورت خودکار از نام محصول ساخته می‌شود.</p>
                 @error('slug') <p class="text-xs text-brand-red mt-1.5">{{ $message }}</p> @enderror
             </div>
         </div>
@@ -128,6 +129,49 @@
                 <input type="file" x-ref="fileInput" name="image" id="image" accept="image/*" class="hidden" @change="const f = $event.target.files[0]; if (f) { fileName = f.name; preview = URL.createObjectURL(f); }">
             </div>
             @error('image') <p class="text-xs text-brand-red mt-1.5">{{ $message }}</p> @enderror
+        </div>
+
+        {{-- SEO section --}}
+        <div class="pt-6 border-t border-gray-100">
+            <div class="flex items-center gap-2 mb-1">
+                <i data-lucide="search" class="w-4 h-4 text-brand-red"></i>
+                <h2 class="text-base font-semibold text-brand-charcoal">سئو (SEO)</h2>
+            </div>
+            <p class="text-xs text-gray-500 mb-4">این بخش اختیاری است. اگر خالی بگذارید، سایت به‌صورت خودکار از نام، برند و دسته‌بندی محصول یک نسخه مناسب می‌سازد.</p>
+
+            <div class="space-y-5">
+                {{-- SEO title --}}
+                <div>
+                    <label for="meta_title" class="block text-sm font-medium text-brand-charcoal mb-2">عنوان سئو (Meta Title)</label>
+                    <input type="text" id="meta_title" name="meta_title" value="{{ old('meta_title') }}" maxlength="70" class="w-full bg-gray-50 rounded-lg px-4 py-2.5 text-sm border border-gray-200 focus:ring-2 focus:ring-brand-red/30 focus:bg-white focus:border-brand-red/50 transition-all" placeholder="مثال: لنت ترمز جلو پژو ۲۰۶ | خانه‌ی موتور">
+                    <p class="text-xs text-gray-400 mt-1.5">عنوانی که در نتیجه گوگل و تب مرورگر نمایش داده می‌شود. اگر خالی بماند، نام محصول استفاده می‌شود.</p>
+                    @error('meta_title') <p class="text-xs text-brand-red mt-1.5">{{ $message }}</p> @enderror
+                </div>
+
+                {{-- SEO meta description --}}
+                <div>
+                    <label for="meta_description" class="block text-sm font-medium text-brand-charcoal mb-2">توضیح متا (Meta Description)</label>
+                    <textarea id="meta_description" name="meta_description" rows="3" maxlength="320" class="w-full bg-gray-50 rounded-lg px-4 py-2.5 text-sm border border-gray-200 focus:ring-2 focus:ring-brand-red/30 focus:bg-white focus:border-brand-red/50 transition-all resize-y" placeholder="یک توضیح کوتاه و جذاب که مشتری را ترغیب به کلیک می‌کند...">{{ old('meta_description') }}</textarea>
+                    <p class="text-xs text-gray-400 mt-1.5">توضیح کوتاهی که زیر عنوان در نتایج گوگل نمایش داده می‌شود. اگر خالی بماند، از نام، برند، دسته‌بندی و توضیحات محصول ساخته می‌شود.</p>
+                    @error('meta_description') <p class="text-xs text-brand-red mt-1.5">{{ $message }}</p> @enderror
+                </div>
+
+                {{-- SEO tags --}}
+                <div>
+                    <label for="seo_tags" class="block text-sm font-medium text-brand-charcoal mb-2">کلمات کلیدی (SEO Tags)</label>
+                    <input type="text" id="seo_tags" name="seo_tags" value="{{ old('seo_tags') }}" class="w-full bg-gray-50 rounded-lg px-4 py-2.5 text-sm border border-gray-200 focus:ring-2 focus:ring-brand-red/30 focus:bg-white focus:border-brand-red/50 transition-all" placeholder="مثال: لنت ترمز، پژو ۲۰۶، قطعات ترمز">
+                    <p class="text-xs text-gray-400 mt-1.5">کلماتی که مشتریان برای پیدا کردن این محصول جستجو می‌کنند، با ویرگول جدا کنید. اگر خالی بماند، از نام، برند، دسته‌بندی و مدل‌های سازگار ساخته می‌شود.</p>
+                    @error('seo_tags') <p class="text-xs text-brand-red mt-1.5">{{ $message }}</p> @enderror
+                </div>
+
+                {{-- Canonical URL (advanced) --}}
+                <div>
+                    <label for="canonical_url" class="block text-sm font-medium text-brand-charcoal mb-2">آدرس Canonical <span class="text-gray-400 font-normal">(پیشرفته)</span></label>
+                    <input type="url" id="canonical_url" name="canonical_url" value="{{ old('canonical_url') }}" dir="ltr" class="w-full bg-gray-50 rounded-lg px-4 py-2.5 text-sm border border-gray-200 focus:ring-2 focus:ring-brand-red/30 focus:bg-white focus:border-brand-red/50 transition-all font-num" placeholder="https://khanemotor.com/products/...">
+                    <p class="text-xs text-gray-400 mt-1.5">فقط در موارد خاص لازم است (مثلاً وقتی همین محصول در آدرس دیگری هم نمایش داده می‌شود). در حالت عادی خالی بگذارید.</p>
+                    @error('canonical_url') <p class="text-xs text-brand-red mt-1.5">{{ $message }}</p> @enderror
+                </div>
+            </div>
         </div>
 
         {{-- Actions --}}

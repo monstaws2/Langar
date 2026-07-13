@@ -1,0 +1,95 @@
+You are working inside the existing Langar Laravel repository.
+
+Read and follow these rules exactly before making changes:
+
+1. First inspect the current repo files related to products, admin product management, migrations, models, routes, layouts, and storefront product pages.
+2. Do not touch OTP, auth flow, checkout, or the working /admin route setup unless a direct conflict is found.
+3. Do not invent field names without checking the current products table and Product model first.
+4. Reuse the existing Laravel + Blade + Tailwind structure already in the repo.
+5. Show the FULL content of every changed file, not snippets.
+6. Keep everything RTL/Farsi-friendly for admin and storefront.
+7. Make the solution easy for a beginner store owner to use.
+
+Goal:
+Add a practical SEO section to the admin product create/edit workflow so I can enter products later with SEO already built in.
+
+Main idea:
+I do not have products yet, so I want SEO fields built into product management now. I want something simple, useful, and realistic for an e-commerce store selling motorcycle parts in Farsi.
+
+Implement these features:
+
+A) Product SEO database support
+- Inspect the current products table first.
+- If these fields do not already exist, add a migration to the products table for:
+  - meta_title nullable
+  - meta_description nullable
+  - seo_tags nullable (string or text, choose what fits best)
+  - canonical_url nullable
+- Do not duplicate fields if similar ones already exist.
+- Keep it lightweight.
+
+B) Product admin form
+- Add an SEO section to the admin create/edit product form.
+- Include these fields:
+  - SEO title
+  - SEO meta description
+  - SEO tags / keywords
+  - slug
+- Make the labels clear and beginner-friendly.
+- Add short helper text under each field explaining what it is in simple language.
+- Keep the admin UI neat and RTL.
+
+C) Smart defaults
+- If SEO title is empty, automatically fall back to product name.
+- If meta description is empty, generate a safe fallback from product name, brand, category, and a shortened description if available.
+- If slug is empty, auto-generate it from the product name.
+- If seo_tags is empty, generate a simple fallback using available product data such as product name, brand, category, and motorcycle model compatibility if that already exists in the repo.
+- Do not use AI or external APIs for this; do it with simple Laravel logic.
+
+D) Storefront SEO output
+- Make the product page use the SEO fields automatically:
+  - title tag
+  - meta description
+  - canonical tag if set
+  - basic Open Graph tags if the layout already supports page-level metadata
+- If the repo already has a layout or section system for page title/meta, plug into it instead of inventing a separate system.
+- Keep it simple and robust.
+
+E) Admin usability
+- On the product index page in admin, add a small indicator showing whether SEO is filled or missing for each product.
+- If practical, add a filter for:
+  - SEO complete
+  - SEO missing
+- Do not overcomplicate the UI.
+
+F) Validation
+- Add sensible validation rules:
+  - meta_title max length appropriate for SEO
+  - meta_description max length appropriate for SEO
+  - slug unique
+- Use clear validation messages.
+
+G) Nice extra touches
+- If a product image exists, use it as the Open Graph image on the product page.
+- If brand/category exists, use them in the fallback meta description and tags.
+- Keep the code maintainable.
+
+H) Deliverables
+1. First inspect the repo and summarize the current admin product structure and what already exists.
+2. Then implement the feature in the existing structure.
+3. Show the FULL content of every changed file.
+4. List every new/changed file.
+5. Give exact commands I should run.
+6. Give a manual test checklist:
+   - create a product with SEO fields
+   - create a product without SEO fields and confirm fallback works
+   - edit a product and update SEO
+   - view the storefront product page source and confirm title/meta/canonical output
+   - check admin product list SEO indicator
+
+Important guardrails:
+- Do not break current product CRUD.
+- Do not break current admin routes.
+- Do not replace unrelated code.
+- Do not assume products already exist.
+- Build this so adding products later is easy for a beginner.

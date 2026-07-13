@@ -8,7 +8,6 @@ use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -33,6 +32,16 @@ class ProductController extends Controller
             $query->where('is_active', $request->get('status') === 'active');
         }
 
+        if ($request->filled('seo')) {
+            if ($request->get('seo') === 'complete') {
+                $query->whereNotNull('meta_title')->whereNotNull('meta_description');
+            } elseif ($request->get('seo') === 'missing') {
+                $query->where(function ($q) {
+                    $q->whereNull('meta_title')->orWhereNull('meta_description');
+                });
+            }
+        }
+
         $products = $query->latest()->paginate(15)->withQueryString();
         $categories = Category::orderBy('name')->get();
         $brands = Brand::orderBy('name')->get();
@@ -52,7 +61,7 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'slug' => ['required', 'string', 'max:255', 'unique:products,slug'],
+            'slug' => ['nullable', 'string', 'max:255', 'unique:products,slug'],
             'description' => ['nullable', 'string'],
             'image' => ['nullable', 'image', 'max:2048'],
             'price' => ['required', 'integer', 'min:0'],
@@ -60,10 +69,19 @@ class ProductController extends Controller
             'category_id' => ['required', 'exists:categories,id'],
             'brand_id' => ['required', 'exists:brands,id'],
             'is_active' => ['boolean'],
+            'meta_title' => ['nullable', 'string', 'max:70'],
+            'meta_description' => ['nullable', 'string', 'max:320'],
+            'seo_tags' => ['nullable', 'string', 'max:1000'],
+            'canonical_url' => ['nullable', 'url', 'max:255'],
+        ], [
+            'slug.unique' => 'این شناسه (slug) قبلاً برای محصول دیگری استفاده شده است.',
+            'meta_title.max' => 'عنوان سئو نباید بیشتر از :max حرف باشد.',
+            'meta_description.max' => 'توضیح متا نباید بیشتر از :max حرف باشد.',
+            'canonical_url.url' => 'آدرس canonical باید یک لینک معتبر باشد (مثال: https://example.com/product).',
         ]);
 
         if (empty($validated['slug'])) {
-            $validated['slug'] = Str::slug($validated['name']);
+            $validated['slug'] = Product::generateUniqueSlug($validated['name']);
         }
 
         if ($request->hasFile('image')) {
@@ -91,7 +109,7 @@ class ProductController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'slug' => ['required', 'string', 'max:255', 'unique:products,slug,' . $product->id],
+            'slug' => ['nullable', 'string', 'max:255', 'unique:products,slug,'.$product->id],
             'description' => ['nullable', 'string'],
             'image' => ['nullable', 'image', 'max:2048'],
             'price' => ['required', 'integer', 'min:0'],
@@ -99,7 +117,20 @@ class ProductController extends Controller
             'category_id' => ['required', 'exists:categories,id'],
             'brand_id' => ['required', 'exists:brands,id'],
             'is_active' => ['boolean'],
+            'meta_title' => ['nullable', 'string', 'max:70'],
+            'meta_description' => ['nullable', 'string', 'max:320'],
+            'seo_tags' => ['nullable', 'string', 'max:1000'],
+            'canonical_url' => ['nullable', 'url', 'max:255'],
+        ], [
+            'slug.unique' => 'این شناسه (slug) قبلاً برای محصول دیگری استفاده شده است.',
+            'meta_title.max' => 'عنوان سئو نباید بیشتر از :max حرف باشد.',
+            'meta_description.max' => 'توضیح متا نباید بیشتر از :max حرف باشد.',
+            'canonical_url.url' => 'آدرس canonical باید یک لینک معتبر باشد (مثال: https://example.com/product).',
         ]);
+
+        if (empty($validated['slug'])) {
+            $validated['slug'] = Product::generateUniqueSlug($validated['name'], $product->id);
+        }
 
         if ($request->hasFile('image')) {
             if ($product->image) {

@@ -39,6 +39,9 @@
     <meta name="description" content="@yield('meta_description', 'خانه‌ی موتور - فروشگاه تخصصی قطعات یدکی موتورسیکلت در لنگرود گیلان. قطعات اصل با ضمانت اصالت. ارسال به سراسر ایران.')">
     <title>@yield('title', 'صفحه اصلی') | خانه‌ی موتور</title>
 
+    {{-- Per-page extra <head> tags (canonical link, Open Graph, etc.) via @push('meta') --}}
+    @stack('meta')
+
     <style>
         body { font-family: 'Vazirmatn', sans-serif; }
         .font-num { font-family: 'Inter', 'Vazirmatn', sans-serif; }

@@ -64,6 +64,17 @@
                 </a>
             </div>
         </form>
+        <form method="GET" class="mt-3 flex items-center gap-2">
+            @foreach(request()->except(['seo', 'page']) as $key => $value)
+                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+            @endforeach
+            <label for="seo" class="text-xs text-gray-500 shrink-0">وضعیت سئو:</label>
+            <select name="seo" id="seo" onchange="this.form.submit()" class="bg-gray-50 rounded-lg px-3 py-2 text-sm border border-gray-200 focus:ring-2 focus:ring-brand-red/30 focus:bg-white focus:border-brand-red/50 transition-all">
+                <option value="">همه محصولات</option>
+                <option value="complete" @selected(request('seo') === 'complete')>سئو کامل</option>
+                <option value="missing" @selected(request('seo') === 'missing')>سئو ناقص</option>
+            </select>
+        </form>
     </div>
 
     {{-- Table --}}
@@ -79,6 +90,7 @@
                         <th class="px-6 py-3 font-medium">دسته‌بندی</th>
                         <th class="px-6 py-3 font-medium">برند</th>
                         <th class="px-6 py-3 font-medium">وضعیت</th>
+                        <th class="px-6 py-3 font-medium">سئو</th>
                         <th class="px-6 py-3 font-medium text-center">عملیات</th>
                     </tr>
                 </thead>
@@ -122,6 +134,19 @@
                             @endif
                         </td>
                         <td class="px-6 py-4">
+                            @if($product->hasCompleteSeo())
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700" title="عنوان و توضیح سئو پر شده‌اند">
+                                    <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
+                                    کامل
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700" title="عنوان یا توضیح سئو خالی است (از حالت خودکار استفاده می‌شود)">
+                                    <i data-lucide="alert-triangle" class="w-3.5 h-3.5"></i>
+                                    ناقص
+                                </span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4">
                             <div class="flex items-center justify-center gap-1">
                                 <a href="{{ route('admin.products.edit', $product) }}" class="p-2 rounded-lg text-gray-500 hover:bg-brand-red/10 hover:text-brand-red transition-colors" title="ویرایش">
                                     <i data-lucide="pencil" class="w-4 h-4"></i>
@@ -134,7 +159,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="px-6 py-16 text-center">
+                        <td colspan="9" class="px-6 py-16 text-center">
                             <div class="flex flex-col items-center gap-3 text-gray-400">
                                 <div class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center">
                                     <i data-lucide="package-x" class="w-7 h-7"></i>

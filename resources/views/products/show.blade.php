@@ -1,7 +1,21 @@
 @extends('layouts.app')
 
-@section('title', $product->name)
-@section('meta_description', Str::limit(strip_tags($product->description ?? $product->name . ' — فروشگاه قطعات موتورسیکلت خانه‌ی موتور'), 155))
+@section('title', $product->seoTitle())
+@section('meta_description', $product->seoMetaDescription())
+
+@push('meta')
+    <link rel="canonical" href="{{ $product->seoCanonicalUrl() }}">
+    <meta property="og:type" content="product">
+    <meta property="og:title" content="{{ $product->seoTitle() }}">
+    <meta property="og:description" content="{{ $product->seoMetaDescription() }}">
+    <meta property="og:url" content="{{ $product->seoCanonicalUrl() }}">
+    @if($product->image)
+        <meta property="og:image" content="{{ asset('storage/' . $product->image) }}">
+    @endif
+    @if($product->seoTagsList())
+        <meta name="keywords" content="{{ $product->seoTagsList() }}">
+    @endif
+@endpush
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
