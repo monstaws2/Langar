@@ -42,9 +42,15 @@ class Product extends Model
     }
 
     /** Motorcycle models this product is compatible with (used for SEO tag fallback). */
+        /** Motorcycle models this product is compatible with (used for SEO tag fallback). */
     public function motorcycleModels()
     {
         return $this->belongsToMany(MotorcycleModel::class, 'product_motorcycle_models');
+    }
+
+    public function productImages()
+    {
+        return $this->hasMany(ProductImage::class)->orderBy('sort_order');
     }
 
     /* ------------------------------------------------------------------ */

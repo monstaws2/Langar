@@ -14,8 +14,12 @@
             <div class="mt-5 flex items-center gap-3">
                 <span class="text-xs text-gray-500 block">ما را دنبال کنید:</span>
                 <a href="https://instagram.com/khanemotor" target="_blank" rel="noopener" aria-label="اینستاگرام" class="w-9 h-9 rounded-full bg-white/10 hover:bg-brand-red transition flex items-center justify-center">
-                    <i data-lucide="instagram" class="w-5 h-5"></i>
-                </a>
+    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+    </svg>
+</a>
                 <a href="https://t.me/khanemotor" target="_blank" rel="noopener" aria-label="تلگرام" class="w-9 h-9 rounded-full bg-white/10 hover:bg-brand-red transition flex items-center justify-center">
                     <i data-lucide="send" class="w-5 h-5"></i>
                 </a>
@@ -83,9 +87,9 @@
     {{-- Bottom bar --}}
     <div class="border-t border-white/10">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <p class="text-gray-500 text-sm">تمامی حقوق برای خانه‌ی موتور محفوظ است &copy; ۱۴۰۳</p>
+            <p class="text-gray-500 text-sm">تمامی حقوق برای خانه‌ی موتور محفوظ است &copy; 1405</p>
             <div class="flex items-center gap-1 text-gray-500 text-xs">
-                <i data-lucide="shield-check" class="w-3 h-3 text-brand-orange"></i>
+                <i data-lucide="shield-check" class="w-3 h-3 text-brand-orange"><1405
                 <span>خرید امن با ضمانت اصالت کالا</span>
             </div>
         </div>
