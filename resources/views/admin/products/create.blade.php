@@ -109,26 +109,35 @@
             </div>
         </div>
 
-        {{-- Image upload --}}
-        <div>
-            <label for="image" class="block text-sm font-medium text-brand-charcoal mb-2">تصویر محصول</label>
-            <div x-data="{ preview: null, fileName: '' }" class="relative">
-                <div @click="$refs.fileInput.click()" class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:border-brand-red hover:bg-red-50/30 transition-colors">
-                    <div class="flex flex-col items-center gap-2">
-                        <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
-                            <i data-lucide="upload-cloud" class="w-6 h-6 text-gray-400"></i>
+        {{-- Main image + gallery --}}
+        <div class="space-y-5">
+            <div>
+                <label for="image" class="block text-sm font-medium text-brand-charcoal mb-2">تصویر اصلی</label>
+                <div x-data="{ preview: null, fileName: '' }" class="relative">
+                    <div @click="$refs.fileInput.click()" class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:border-brand-red hover:bg-red-50/30 transition-colors">
+                        <div class="flex flex-col items-center gap-2">
+                            <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                                <i data-lucide="upload-cloud" class="w-6 h-6 text-gray-400"></i>
+                            </div>
+                            <div class="text-sm text-gray-600">
+                                <span x-show="!fileName">برای آپلود تصویر اصلی کلیک کنید یا بکشید</span>
+                                <span x-show="fileName" x-text="fileName" class="font-medium text-brand-charcoal"></span>
+                            </div>
+                            <p class="text-xs text-gray-400">PNG، JPG تا ۲ مگابایت. این تصویر در صفحه محصول به‌عنوان تصویر اصلی نمایش داده می‌شود.</p>
                         </div>
-                        <div class="text-sm text-gray-600">
-                            <span x-show="!fileName">برای آپلود تصویر کلیک کنید یا بکشید</span>
-                            <span x-show="fileName" x-text="fileName" class="font-medium text-brand-charcoal"></span>
-                        </div>
-                        <p class="text-xs text-gray-400">PNG، JPG تا ۲ مگابایت</p>
+                        <img x-show="preview" :src="preview" class="mt-4 max-h-40 mx-auto rounded-lg" alt="پیش‌نمایش">
                     </div>
-                    <img x-show="preview" :src="preview" class="mt-4 max-h-40 mx-auto rounded-lg" alt="پیش‌نمایش">
+                    <input type="file" x-ref="fileInput" name="image" id="image" accept="image/*" class="hidden" @change="const f = $event.target.files[0]; if (f) { fileName = f.name; preview = URL.createObjectURL(f); }">
                 </div>
-                <input type="file" x-ref="fileInput" name="image" id="image" accept="image/*" class="hidden" @change="const f = $event.target.files[0]; if (f) { fileName = f.name; preview = URL.createObjectURL(f); }">
+                @error('image') <p class="text-xs text-brand-red mt-1.5">{{ $message }}</p> @enderror
             </div>
-            @error('image') <p class="text-xs text-brand-red mt-1.5">{{ $message }}</p> @enderror
+
+            <div>
+                <label for="gallery_images" class="block text-sm font-medium text-brand-charcoal mb-2">تصاویر گالری</label>
+                <input type="file" id="gallery_images" name="gallery_images[]" multiple accept="image/*" class="block w-full text-sm text-gray-600 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-red file:px-4 file:py-2 file:text-white hover:file:bg-red-700 transition-colors">
+                <p class="text-xs text-gray-400 mt-1.5">تصاویر اضافی محصول که در صفحه جزئیات زیر تصویر اصلی نمایش داده می‌شوند.</p>
+                @error('gallery_images.*') <p class="text-xs text-brand-red mt-1.5">{{ $message }}</p> @enderror
+            </div>
         </div>
 
         {{-- SEO section --}}

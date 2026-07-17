@@ -101,37 +101,75 @@
             </div>
         </div>
 
-        {{-- Image upload --}}
-        <div>
-            <label for="image" class="block text-sm font-medium text-brand-charcoal mb-2">تصویر محصول</label>
-            <div x-data="{ preview: {{ $product->image ? 'true' : 'false' }}, fileName: '{{ $product->image ? basename($product->image) : '' }}' }" class="relative">
-                @if($product->image)
-                    <div class="mb-3 flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                        <div class="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 border border-gray-200 shrink-0">
-                            <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+        {{-- Main image + gallery --}}
+        @php
+            $primaryGalleryImageId = old('primary_image_id', $product->productImages->firstWhere('is_primary', true)?->id);
+            $currentMainImage = $product->image
+                ? Storage::url($product->image)
+                : ($product->productImages->first() ? Storage::url($product->productImages->first()->image_path) : null);
+        @endphp
+        <div class="space-y-5">
+            <div>
+                <label for="image" class="block text-sm font-medium text-brand-charcoal mb-2">تصویر اصلی</label>
+                <div x-data="{ preview: @js($currentMainImage), fileName: '{{ $product->image ? basename($product->image) : '' }}' }" class="relative">
+                    @if($currentMainImage)
+                        <div class="mb-3 flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <div class="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 border border-gray-200 shrink-0">
+                                <img :src="preview" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-sm font-medium text-brand-charcoal truncate" x-text="fileName || 'تصویر اصلی فعلی'"></div>
+                                <div class="text-xs text-gray-400 mt-0.5">این تصویر در صفحه محصول به‌عنوان تصویر اصلی نمایش داده می‌شود</div>
+                            </div>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="text-sm font-medium text-brand-charcoal truncate">{{ basename($product->image) }}</div>
-                            <div class="text-xs text-gray-400 mt-0.5">تصویر فعلی</div>
+                    @endif
+                    <div @click="$refs.fileInput.click()" class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:border-brand-red hover:bg-red-50/30 transition-colors">
+                        <div class="flex flex-col items-center gap-2">
+                            <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                                <i data-lucide="upload-cloud" class="w-6 h-6 text-gray-400"></i>
+                            </div>
+                            <div class="text-sm text-gray-600">
+                                <span x-show="!fileName">برای جایگزینی تصویر اصلی کلیک کنید</span>
+                                <span x-show="fileName" x-text="'انتخاب شد: ' + fileName" class="font-medium text-brand-charcoal"></span>
+                            </div>
+                            <p class="text-xs text-gray-400">PNG، JPG تا ۲ مگابایت — اگر انتخاب شود، به‌جای تصویر فعلی ذخیره می‌شود</p>
                         </div>
+                        <img x-show="preview" :src="preview" class="mt-4 max-h-40 mx-auto rounded-lg" alt="پیش‌نمایش">
                     </div>
-                @endif
-                <div @click="$refs.fileInput.click()" class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:border-brand-red hover:bg-red-50/30 transition-colors">
-                    <div class="flex flex-col items-center gap-2">
-                        <div class="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
-                            <i data-lucide="upload-cloud" class="w-6 h-6 text-gray-400"></i>
-                        </div>
-                        <div class="text-sm text-gray-600">
-                            <span x-show="!fileName">برای آپلود تصویر جدید کلیک کنید</span>
-                            <span x-show="fileName" x-text="fileName ? 'انتخاب شد: ' + fileName : ''" class="font-medium text-brand-charcoal"></span>
-                        </div>
-                        <p class="text-xs text-gray-400">PNG، JPG تا ۲ مگابایت — در صورت انتخاب، تصویر جایگزین می‌شود</p>
-                    </div>
-                    <img x-show="preview" :src="preview" class="mt-4 max-h-40 mx-auto rounded-lg" alt="پیش‌نمایش">
+                    <input type="file" x-ref="fileInput" name="image" id="image" accept="image/*" class="hidden" @change="const f = $event.target.files[0]; if (f) { fileName = f.name; preview = URL.createObjectURL(f); }">
                 </div>
-                <input type="file" x-ref="fileInput" name="image" id="image" accept="image/*" class="hidden" @change="const f = $event.target.files[0]; if (f) { fileName = f.name; preview = URL.createObjectURL(f); }">
+                @error('image') <p class="text-xs text-brand-red mt-1.5">{{ $message }}</p> @enderror
             </div>
-            @error('image') <p class="text-xs text-brand-red mt-1.5">{{ $message }}</p> @enderror
+
+            <div>
+                <label for="gallery_images" class="block text-sm font-medium text-brand-charcoal mb-2">افزودن تصاویر گالری</label>
+                <input type="file" id="gallery_images" name="gallery_images[]" multiple accept="image/*" class="block w-full text-sm text-gray-600 file:mr-4 file:rounded-lg file:border-0 file:bg-brand-red file:px-4 file:py-2 file:text-white hover:file:bg-red-700 transition-colors">
+                <p class="text-xs text-gray-400 mt-1.5">این تصاویر در صفحه محصول زیر تصویر اصلی نمایش داده می‌شوند.</p>
+                @error('gallery_images.*') <p class="text-xs text-brand-red mt-1.5">{{ $message }}</p> @enderror
+            </div>
+
+            @if($product->productImages->count())
+                <div>
+                    <label class="block text-sm font-medium text-brand-charcoal mb-2">تعیین تصویر اصلی از گالری</label>
+                    <p class="text-xs text-gray-400 mb-3">اگر یکی از تصاویر گالری را انتخاب کنید، همان تصویر به‌عنوان تصویر اصلی محصول ذخیره می‌شود.</p>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                        @foreach($product->productImages as $galleryImage)
+                            <label class="block cursor-pointer">
+                                <input type="radio" name="primary_image_id" value="{{ $galleryImage->id }}" @checked((string) old('primary_image_id', $primaryGalleryImageId) === (string) $galleryImage->id) class="peer sr-only">
+                                <div class="rounded-xl border-2 border-gray-200 bg-gray-50 p-2 transition-all peer-checked:border-brand-red peer-checked:ring-2 peer-checked:ring-brand-red/20">
+                                    <div class="aspect-square rounded-lg overflow-hidden bg-white border border-gray-200">
+                                        <img src="{{ Storage::url($galleryImage->image_path) }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                                    </div>
+                                    <div class="mt-2 flex items-center justify-between gap-2 text-[11px] text-gray-500">
+                                        <span class="truncate">{{ basename($galleryImage->image_path) }}</span>
+                                        <span class="shrink-0 rounded-full px-2 py-0.5 {{ $galleryImage->is_primary ? 'bg-brand-red text-white' : 'bg-gray-200 text-gray-600' }}">{{ $galleryImage->is_primary ? 'اصلی' : 'گالری' }}</span>
+                                    </div>
+                                </div>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
         </div>
 
         {{-- SEO section --}}

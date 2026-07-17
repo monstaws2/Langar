@@ -40,7 +40,7 @@ class ProductController extends Controller
     public function show(string $slug)
     {
         $product = Product::where('slug', $slug)
-            ->with(['category', 'brand'])
+            ->with(['category', 'brand', 'productImages'])
             ->firstOrFail();
 
         $related = Product::where('category_id', $product->category_id)

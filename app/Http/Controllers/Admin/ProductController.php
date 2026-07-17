@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -64,6 +65,9 @@ class ProductController extends Controller
             'slug' => ['nullable', 'string', 'max:255', 'unique:products,slug'],
             'description' => ['nullable', 'string'],
             'image' => ['nullable', 'image', 'max:2048'],
+            'gallery_images' => ['nullable', 'array'],
+            'gallery_images.*' => ['image', 'max:2048'],
+            'primary_image_id' => ['nullable', 'integer'],
             'price' => ['required', 'integer', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
             'category_id' => ['required', 'exists:categories,id'],
@@ -84,13 +88,18 @@ class ProductController extends Controller
             $validated['slug'] = Product::generateUniqueSlug($validated['name']);
         }
 
+        $mainImagePath = null;
         if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('products', 'public');
+            $mainImagePath = $request->file('image')->store('products/'.$validated['slug'], 'public');
+            $validated['image'] = $mainImagePath;
         }
 
         $validated['is_active'] = $request->boolean('is_active');
 
-        Product::create($validated);
+        $product = Product::create($validated);
+
+        $this->storeGalleryImages($product, $request);
+        $this->syncPrimaryImage($product, $request->input('primary_image_id'), $mainImagePath, true);
 
         return redirect()
             ->route('admin.products.index')
@@ -112,6 +121,9 @@ class ProductController extends Controller
             'slug' => ['nullable', 'string', 'max:255', 'unique:products,slug,'.$product->id],
             'description' => ['nullable', 'string'],
             'image' => ['nullable', 'image', 'max:2048'],
+            'gallery_images' => ['nullable', 'array'],
+            'gallery_images.*' => ['image', 'max:2048'],
+            'primary_image_id' => ['nullable', 'integer'],
             'price' => ['required', 'integer', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
             'category_id' => ['required', 'exists:categories,id'],
@@ -132,16 +144,21 @@ class ProductController extends Controller
             $validated['slug'] = Product::generateUniqueSlug($validated['name'], $product->id);
         }
 
+        $mainImagePath = null;
         if ($request->hasFile('image')) {
             if ($product->image) {
                 Storage::disk('public')->delete($product->image);
             }
-            $validated['image'] = $request->file('image')->store('products', 'public');
+            $mainImagePath = $request->file('image')->store('products/'.$validated['slug'], 'public');
+            $validated['image'] = $mainImagePath;
         }
 
         $validated['is_active'] = $request->boolean('is_active');
 
         $product->update($validated);
+
+        $this->storeGalleryImages($product, $request);
+        $this->syncPrimaryImage($product, $request->input('primary_image_id'), $mainImagePath, false);
 
         return redirect()
             ->route('admin.products.index')
@@ -150,14 +167,77 @@ class ProductController extends Controller
 
     public function destroy(Product $product)
     {
+        $paths = $product->productImages->pluck('image_path')->all();
+
         if ($product->image) {
-            Storage::disk('public')->delete($product->image);
+            $paths[] = $product->image;
         }
+
+        Storage::disk('public')->delete(array_values(array_unique(array_filter($paths))));
 
         $product->delete();
 
         return redirect()
             ->route('admin.products.index')
             ->with('success', 'محصول حذف شد.');
+    }
+
+    private function storeGalleryImages(Product $product, Request $request): void
+    {
+        $galleryImages = $request->file('gallery_images', []);
+
+        if (! is_array($galleryImages) || empty($galleryImages)) {
+            return;
+        }
+
+        $nextSortOrder = (int) $product->productImages()->max('sort_order') + 1;
+
+        foreach ($galleryImages as $galleryImage) {
+            if (! $galleryImage) {
+                continue;
+            }
+
+            $imagePath = $galleryImage->store('products/'.$product->slug, 'public');
+
+            $product->productImages()->create([
+                'image_path' => $imagePath,
+                'is_primary' => false,
+                'sort_order' => $nextSortOrder,
+            ]);
+
+            $nextSortOrder++;
+        }
+    }
+
+    private function syncPrimaryImage(Product $product, mixed $primaryImageId, ?string $mainImagePath, bool $isCreate): void
+    {
+        if ($mainImagePath) {
+            $product->productImages()->update(['is_primary' => false]);
+            $product->forceFill(['image' => $mainImagePath])->save();
+
+            return;
+        }
+
+        if (! empty($primaryImageId)) {
+            $selectedImage = $product->productImages()->whereKey($primaryImageId)->first();
+
+            if ($selectedImage) {
+                $product->productImages()->update(['is_primary' => false]);
+                $selectedImage->update(['is_primary' => true]);
+                $product->forceFill(['image' => $selectedImage->image_path])->save();
+
+                return;
+            }
+        }
+
+        if (($isCreate || blank($product->image)) && $product->productImages()->exists()) {
+            $firstImage = $product->productImages()->orderBy('sort_order')->first();
+
+            if ($firstImage) {
+                $product->productImages()->update(['is_primary' => false]);
+                $firstImage->update(['is_primary' => true]);
+                $product->forceFill(['image' => $firstImage->image_path])->save();
+            }
+        }
     }
 }

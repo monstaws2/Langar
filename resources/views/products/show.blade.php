@@ -3,14 +3,30 @@
 @section('title', $product->seoTitle())
 @section('meta_description', $product->seoMetaDescription())
 
+@php
+    $productImages = $product->productImages;
+    $primaryProductImage = $productImages->firstWhere('is_primary', true) ?? $productImages->first();
+    $galleryImageList = $productImages->map(function ($image) use ($product) {
+        return [
+            'id' => $image->id,
+            'src' => asset('storage/' . $image->image_path),
+            'alt' => $product->name,
+            'primary' => (bool) $image->is_primary,
+        ];
+    })->values();
+    $fallbackMainImage = $primaryProductImage
+        ? asset('storage/' . $primaryProductImage->image_path)
+        : ($product->image ? asset('storage/' . $product->image) : null);
+@endphp
+
 @push('meta')
     <link rel="canonical" href="{{ $product->seoCanonicalUrl() }}">
     <meta property="og:type" content="product">
     <meta property="og:title" content="{{ $product->seoTitle() }}">
     <meta property="og:description" content="{{ $product->seoMetaDescription() }}">
     <meta property="og:url" content="{{ $product->seoCanonicalUrl() }}">
-    @if($product->image)
-        <meta property="og:image" content="{{ asset('storage/' . $product->image) }}">
+    @if($fallbackMainImage)
+        <meta property="og:image" content="{{ $fallbackMainImage }}">
     @endif
     @if($product->seoTagsList())
         <meta name="keywords" content="{{ $product->seoTagsList() }}">
@@ -35,20 +51,62 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="product-show-grid">
         <!-- Image -->
         <div class="md:col-span-1" data-product-panel>
-            <div class="bg-white rounded-2xl border border-gray-200 h-80 sm:h-96 flex items-center justify-center relative overflow-hidden">
-                @if($product->image)
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
-                @else
-                    <div class="flex flex-col items-center text-gray-300">
-                        <i data-lucide="{{ $product->category->icon ?? 'package' }}" class="w-24 h-24 sm:w-28 sm:h-28"></i>
-                        <span class="text-xs mt-2">{{ $product->category->name ?? 'محصول' }}</span>
-                    </div>
-                @endif
+            <div
+                x-data="{
+                    images: @js($galleryImageList),
+                    fallback: @js($fallbackMainImage),
+                    activeIndex: 0,
+                    init() {
+                        const primaryIndex = this.images.findIndex((image) => image.primary);
+                        this.activeIndex = primaryIndex >= 0 ? primaryIndex : 0;
+                    },
+                    get activeImage() {
+                        return this.images[this.activeIndex] ?? null;
+                    },
+                    setActive(index) {
+                        this.activeIndex = index;
+                    },
+                }"
+                x-init="init()"
+                class="space-y-3"
+            >
+                <div class="bg-white rounded-2xl border border-gray-200 aspect-square sm:aspect-[4/3] flex items-center justify-center relative overflow-hidden">
+                    <template x-if="activeImage">
+                        <img :src="activeImage.src" :alt="activeImage.alt" loading="lazy" class="w-full h-full object-contain bg-white transition-transform duration-300 hover:scale-105">
+                    </template>
 
-                @if($product->stock > 0 && $product->stock <= 5)
-                    <span class="absolute top-3 right-3 px-2.5 py-1 bg-amber-500 text-white text-xs font-bold rounded-lg">تنها {{ \App\Support\Format::digits($product->stock) }} عدد باقی‌مانده</span>
-                @elseif($product->stock < 1)
-                    <span class="absolute top-3 right-3 px-2.5 py-1 bg-gray-800/80 text-white text-xs font-bold rounded-lg">ناموجود</span>
+                    <template x-if="!activeImage && fallback">
+                        <img :src="fallback" alt="{{ $product->name }}" loading="lazy" class="w-full h-full object-contain bg-white transition-transform duration-300 hover:scale-105">
+                    </template>
+
+                    <template x-if="!activeImage && !fallback">
+                        <div class="flex flex-col items-center text-gray-300">
+                            <i data-lucide="{{ $product->category->icon ?? 'package' }}" class="w-24 h-24 sm:w-28 sm:h-28"></i>
+                            <span class="text-xs mt-2">{{ $product->category->name ?? 'محصول' }}</span>
+                        </div>
+                    </template>
+
+                    @if($product->stock > 0 && $product->stock <= 5)
+                        <span class="absolute top-3 right-3 px-2.5 py-1 bg-amber-500 text-white text-xs font-bold rounded-lg">تنها {{ \App\Support\Format::digits($product->stock) }} عدد باقی‌مانده</span>
+                    @elseif($product->stock < 1)
+                        <span class="absolute top-3 right-3 px-2.5 py-1 bg-gray-800/80 text-white text-xs font-bold rounded-lg">ناموجود</span>
+                    @endif
+                </div>
+
+                @if($productImages->count())
+                    <div class="flex gap-3 overflow-x-auto md:overflow-visible md:grid md:grid-cols-2 lg:grid-cols-3 md:max-h-[18rem] md:overflow-y-auto pb-1 md:pb-0" dir="rtl">
+                        @foreach($productImages as $index => $image)
+                            <button
+                                type="button"
+                                @click="setActive({{ $index }})"
+                                class="group shrink-0 md:shrink-0 w-24 h-24 md:w-full md:h-24 rounded-xl border-2 bg-white overflow-hidden transition-all duration-200 snap-start"
+                                :class="activeIndex === {{ $index }} ? 'border-brand-red ring-2 ring-brand-red/20' : 'border-gray-200 hover:border-brand-red/40'"
+                                aria-label="نمایش تصویر {{ $loop->iteration }}"
+                            >
+                                <img src="{{ asset('storage/' . $image->image_path) }}" alt="{{ $product->name }}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                            </button>
+                        @endforeach
+                    </div>
                 @endif
             </div>
         </div>
